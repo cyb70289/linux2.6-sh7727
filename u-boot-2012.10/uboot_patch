@@ -1,6 +1,7 @@
-diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/config.mk u-boot-2012.10//arch/sh/config.mk
---- /home/cyb/opt/u-boot-2012.10//arch/sh/config.mk	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//arch/sh/config.mk	2013-03-06 09:43:18.000000000 +0800
+diff --git a/arch/sh/config.mk b/arch/sh/config.mk
+index 07ff8b9..d153411 100644
+--- a/arch/sh/config.mk
++++ b/arch/sh/config.mk
 @@ -21,13 +21,13 @@
  # MA 02111-1307 USA
  #
@@ -18,9 +19,10 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/config.mk u-boot-2012.10//arch/
 +PLATFORM_CPPFLAGS += -DCONFIG_SH -D__SH__ -ml -Wa,--isa=sh3
 +PLATFORM_LDFLAGS += -e $(CONFIG_SYS_TEXT_BASE) --defsym reloc_dst=$(CONFIG_SYS_TEXT_BASE) -EL -z muldefs
  LDFLAGS_FINAL = --gc-sections
-diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh3.h u-boot-2012.10//arch/sh/include/asm/cpu_sh3.h
---- /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh3.h	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//arch/sh/include/asm/cpu_sh3.h	2013-02-21 15:19:57.000000000 +0800
+diff --git a/arch/sh/include/asm/cpu_sh3.h b/arch/sh/include/asm/cpu_sh3.h
+index 385f5dc..669c4f0 100644
+--- a/arch/sh/include/asm/cpu_sh3.h
++++ b/arch/sh/include/asm/cpu_sh3.h
 @@ -1,6 +1,7 @@
  /*
   * (C) Copyright 2007-2009 Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
@@ -38,9 +40,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh3.h u-boot-20
  #else
  #error "Unknown SH3 variant"
  #endif
-diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh7727.h u-boot-2012.10//arch/sh/include/asm/cpu_sh7727.h
---- /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh7727.h	1970-01-01 08:00:00.000000000 +0800
-+++ u-boot-2012.10//arch/sh/include/asm/cpu_sh7727.h	2013-02-21 15:21:09.000000000 +0800
+diff --git a/arch/sh/include/asm/cpu_sh7727.h b/arch/sh/include/asm/cpu_sh7727.h
+new file mode 100644
+index 0000000..6ccd4bb
+--- /dev/null
++++ b/arch/sh/include/asm/cpu_sh7727.h
 @@ -0,0 +1,149 @@
 +/*
 + * Copyright 2013 (C)
@@ -191,10 +195,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh7727.h u-boot
 +/*	H-UDI	*/
 +
 +#endif /* _ASM_CPU_SH7727_H_ */
-diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/lib/Makefile u-boot-2012.10//arch/sh/lib/Makefile
---- /home/cyb/opt/u-boot-2012.10//arch/sh/lib/Makefile	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//arch/sh/lib/Makefile	2013-02-17 19:53:59.000000000 +0800
-@@ -23,7 +23,18 @@
+diff --git a/arch/sh/lib/Makefile b/arch/sh/lib/Makefile
+index 256811a..20ae035 100644
+--- a/arch/sh/lib/Makefile
++++ b/arch/sh/lib/Makefile
+@@ -23,7 +23,18 @@ include $(TOPDIR)/config.mk
  LIB	= $(obj)lib$(ARCH).o
  LIBGCC	= $(obj)libgcc.o
  
@@ -214,9 +219,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/lib/Makefile u-boot-2012.10//ar
  GLSOBJS	+= ashiftrt.o
  GLSOBJS	+= ashiftlt.o
  GLSOBJS	+= lshiftrt.o
-diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/lib/udivsi3_i4i.S u-boot-2012.10//arch/sh/lib/udivsi3_i4i.S
---- /home/cyb/opt/u-boot-2012.10//arch/sh/lib/udivsi3_i4i.S	1970-01-01 08:00:00.000000000 +0800
-+++ u-boot-2012.10//arch/sh/lib/udivsi3_i4i.S	2013-02-19 08:50:05.000000000 +0800
+diff --git a/arch/sh/lib/udivsi3_i4i.S b/arch/sh/lib/udivsi3_i4i.S
+new file mode 100644
+index 0000000..f1a79d9
+--- /dev/null
++++ b/arch/sh/lib/udivsi3_i4i.S
 @@ -0,0 +1,666 @@
 +/* Copyright (C) 1994, 1995, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
 +   2004, 2005, 2006
@@ -884,9 +891,69 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/lib/udivsi3_i4i.S u-boot-2012.1
 +	.long	0x4104105
 +	.long	0x2040811
 +	/* maximum error: 0.987342 scaled: 0.921875*/
-diff -Naur /home/cyb/opt/u-boot-2012.10//board/cobra7727/cobra7727.c u-boot-2012.10//board/cobra7727/cobra7727.c
---- /home/cyb/opt/u-boot-2012.10//board/cobra7727/cobra7727.c	1970-01-01 08:00:00.000000000 +0800
-+++ u-boot-2012.10//board/cobra7727/cobra7727.c	2013-02-19 09:15:32.000000000 +0800
+diff --git a/board/cobra7727/Makefile b/board/cobra7727/Makefile
+new file mode 100644
+index 0000000..ef1e245
+--- /dev/null
++++ b/board/cobra7727/Makefile
+@@ -0,0 +1,52 @@
++#
++# Copyright (C) 2013
++# Yibo Cai <cyb70289@gmail.com>
++#
++# Copyright (C) 2007
++# Yoshihiro Shimoda <shimoda.yoshihiro@renesas.com>
++#
++# Copyright (C) 2007
++# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
++#
++# Copyright (C) 2007
++# Kenati Technologies, Inc.
++#
++# board/cobra7727/Makefile
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License as
++# published by the Free Software Foundation; either version 2 of
++# the License, or (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++# MA 02111-1307 USA
++
++include $(TOPDIR)/config.mk
++
++LIB	= $(obj)lib$(BOARD).o
++
++COBJS	:= cobra7727.o
++SOBJS	:= lowlevel_init.o
++
++SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
++OBJS	:= $(addprefix $(obj),$(COBJS))
++SOBJS	:= $(addprefix $(obj),$(SOBJS))
++
++$(LIB):	$(OBJS) $(SOBJS)
++	$(call cmd_link_o_target, $(OBJS) $(SOBJS))
++
++#########################################################################
++
++# defines $(obj).depend target
++include $(SRCTREE)/rules.mk
++
++sinclude $(obj).depend
++
++#########################################################################
+diff --git a/board/cobra7727/cobra7727.c b/board/cobra7727/cobra7727.c
+new file mode 100644
+index 0000000..f1154e0
+--- /dev/null
++++ b/board/cobra7727/cobra7727.c
 @@ -0,0 +1,60 @@
 +/*
 + * Copyright (C) 2007
@@ -948,9 +1015,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//board/cobra7727/cobra7727.c u-boot-2012
 +{
 +//	outw(value & 0xFF, LED_BASE);
 +}
-diff -Naur /home/cyb/opt/u-boot-2012.10//board/cobra7727/lowlevel_init.S u-boot-2012.10//board/cobra7727/lowlevel_init.S
---- /home/cyb/opt/u-boot-2012.10//board/cobra7727/lowlevel_init.S	1970-01-01 08:00:00.000000000 +0800
-+++ u-boot-2012.10//board/cobra7727/lowlevel_init.S	2013-02-21 15:17:23.000000000 +0800
+diff --git a/board/cobra7727/lowlevel_init.S b/board/cobra7727/lowlevel_init.S
+new file mode 100644
+index 0000000..c6befb4
+--- /dev/null
++++ b/board/cobra7727/lowlevel_init.S
 @@ -0,0 +1,118 @@
 +/*
 + * (C) Copyright 2013
@@ -1070,66 +1139,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//board/cobra7727/lowlevel_init.S u-boot-
 +CCR_D:		.long	0x0000000B
 +
 +EIGHT:		.long	0x00000008
-diff -Naur /home/cyb/opt/u-boot-2012.10//board/cobra7727/Makefile u-boot-2012.10//board/cobra7727/Makefile
---- /home/cyb/opt/u-boot-2012.10//board/cobra7727/Makefile	1970-01-01 08:00:00.000000000 +0800
-+++ u-boot-2012.10//board/cobra7727/Makefile	2013-03-24 12:49:06.000000000 +0800
-@@ -0,0 +1,52 @@
-+#
-+# Copyright (C) 2013
-+# Yibo Cai <cyb70289@gmail.com>
-+#
-+# Copyright (C) 2007
-+# Yoshihiro Shimoda <shimoda.yoshihiro@renesas.com>
-+#
-+# Copyright (C) 2007
-+# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-+#
-+# Copyright (C) 2007
-+# Kenati Technologies, Inc.
-+#
-+# board/cobra7727/Makefile
-+#
-+# This program is free software; you can redistribute it and/or
-+# modify it under the terms of the GNU General Public License as
-+# published by the Free Software Foundation; either version 2 of
-+# the License, or (at your option) any later version.
-+#
-+# This program is distributed in the hope that it will be useful,
-+# but WITHOUT ANY WARRANTY; without even the implied warranty of
-+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+# GNU General Public License for more details.
-+#
-+# You should have received a copy of the GNU General Public License
-+# along with this program; if not, write to the Free Software
-+# Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-+# MA 02111-1307 USA
-+
-+include $(TOPDIR)/config.mk
-+
-+LIB	= $(obj)lib$(BOARD).o
-+
-+COBJS	:= cobra7727.o
-+SOBJS	:= lowlevel_init.o
-+
-+SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
-+OBJS	:= $(addprefix $(obj),$(COBJS))
-+SOBJS	:= $(addprefix $(obj),$(SOBJS))
-+
-+$(LIB):	$(OBJS) $(SOBJS)
-+	$(call cmd_link_o_target, $(OBJS) $(SOBJS))
-+
-+#########################################################################
-+
-+# defines $(obj).depend target
-+include $(SRCTREE)/rules.mk
-+
-+sinclude $(obj).depend
-+
-+#########################################################################
-diff -Naur /home/cyb/opt/u-boot-2012.10//boards.cfg u-boot-2012.10//boards.cfg
---- /home/cyb/opt/u-boot-2012.10//boards.cfg	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//boards.cfg	2013-02-17 15:23:46.000000000 +0800
-@@ -1073,6 +1073,7 @@
+diff --git a/boards.cfg b/boards.cfg
+index 7c1fc74..b3c28a9 100644
+--- a/boards.cfg
++++ b/boards.cfg
+@@ -1073,6 +1073,7 @@ rsk7264                      sh          sh2         rsk7264             renesas
  rsk7269                      sh          sh2         rsk7269             renesas        -
  mpr2                         sh          sh3         mpr2                -              -
  ms7720se                     sh          sh3         ms7720se            -              -
@@ -1137,10 +1151,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//boards.cfg u-boot-2012.10//boards.cfg
  shmin                        sh          sh3         shmin               -              -
  espt                         sh          sh4         espt                -              -
  ms7722se                     sh          sh4         ms7722se            -              -
-diff -Naur /home/cyb/opt/u-boot-2012.10//common/env_embedded.c u-boot-2012.10//common/env_embedded.c
---- /home/cyb/opt/u-boot-2012.10//common/env_embedded.c	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//common/env_embedded.c	2013-02-20 16:44:08.000000000 +0800
-@@ -213,8 +213,11 @@
+diff --git a/common/env_embedded.c b/common/env_embedded.c
+index 3872878..1cba451 100644
+--- a/common/env_embedded.c
++++ b/common/env_embedded.c
+@@ -213,8 +213,11 @@ env_t redundand_environment __PPCENV__ = {
   * tools/envcrc, they are placed in the
   * .data/.sdata section.
   *
@@ -1152,10 +1167,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//common/env_embedded.c u-boot-2012.10//c
  
  /*
   * Add in absolutes.
-diff -Naur /home/cyb/opt/u-boot-2012.10//common/env_flash.c u-boot-2012.10//common/env_flash.c
---- /home/cyb/opt/u-boot-2012.10//common/env_flash.c	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//common/env_flash.c	2013-02-20 16:52:14.000000000 +0800
-@@ -55,8 +55,8 @@
+diff --git a/common/env_flash.c b/common/env_flash.c
+index aa970d4..93a3a8e 100644
+--- a/common/env_flash.c
++++ b/common/env_flash.c
+@@ -55,8 +55,8 @@ env_t *env_ptr = &environment;
  static env_t *flash_addr = (env_t *)CONFIG_ENV_ADDR;
  
  #else /* ! ENV_IS_EMBEDDED */
@@ -1165,10 +1181,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//common/env_flash.c u-boot-2012.10//comm
  static env_t *flash_addr = (env_t *)CONFIG_ENV_ADDR;
  #endif /* ENV_IS_EMBEDDED */
  
-diff -Naur /home/cyb/opt/u-boot-2012.10//config.mk u-boot-2012.10//config.mk
---- /home/cyb/opt/u-boot-2012.10//config.mk	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//config.mk	2013-03-14 11:02:13.000000000 +0800
-@@ -186,7 +186,9 @@
+diff --git a/config.mk b/config.mk
+index 51b4783..547f11b 100644
+--- a/config.mk
++++ b/config.mk
+@@ -186,7 +186,9 @@ endif
  # who are porting old code to latest mainline but not updating $(AR).
  ARFLAGS = $(error update your Makefile to use cmd_link_o_target and not AR)
  RELFLAGS= $(PLATFORM_RELFLAGS)
@@ -1178,10 +1195,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//config.mk u-boot-2012.10//config.mk
  OPTFLAGS= -Os #-fomit-frame-pointer
  
  OBJCFLAGS += --gap-fill=0xff
-diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/mtd/cfi_flash.c u-boot-2012.10//drivers/mtd/cfi_flash.c
---- /home/cyb/opt/u-boot-2012.10//drivers/mtd/cfi_flash.c	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//drivers/mtd/cfi_flash.c	2013-03-24 12:54:41.000000000 +0800
-@@ -553,7 +553,7 @@
+diff --git a/drivers/mtd/cfi_flash.c b/drivers/mtd/cfi_flash.c
+index 43140f3..adf0a40 100644
+--- a/drivers/mtd/cfi_flash.c
++++ b/drivers/mtd/cfi_flash.c
+@@ -553,7 +553,7 @@ static int flash_is_busy (flash_info_t * info, flash_sect_t sect)
  	default:
  		retval = 0;
  	}
@@ -1190,9 +1208,10 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/mtd/cfi_flash.c u-boot-2012.10/
  	return retval;
  }
  
-diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.c u-boot-2012.10//drivers/serial/serial_sh.c
---- /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.c	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//drivers/serial/serial_sh.c	2013-02-23 13:31:29.000000000 +0800
+diff --git a/drivers/serial/serial_sh.c b/drivers/serial/serial_sh.c
+index 13919c6..df0769d 100644
+--- a/drivers/serial/serial_sh.c
++++ b/drivers/serial/serial_sh.c
 @@ -2,6 +2,7 @@
   * SuperH SCIF device driver.
   * Copyright (C) 2007,2008,2010 Nobuhiro Iwamatsu
@@ -1201,7 +1220,7 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.c u-boot-2012.
   *
   * This program is free software; you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
-@@ -150,8 +151,10 @@
+@@ -150,8 +151,10 @@ void handle_error(void)
  {
  	sci_in(&sh_sci, SCxSR);
  	sci_out(&sh_sci, SCxSR, SCxSR_ERROR_CLEAR(&sh_sci));
@@ -1212,7 +1231,7 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.c u-boot-2012.
  }
  
  int serial_getc_check(void)
-@@ -162,8 +165,10 @@
+@@ -162,8 +165,10 @@ int serial_getc_check(void)
  
  	if (status & SCIF_ERRORS)
  		handle_error();
@@ -1223,7 +1242,7 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.c u-boot-2012.
  	return status & (SCIF_DR | SCxSR_RDxF(&sh_sci));
  }
  
-@@ -183,7 +188,9 @@
+@@ -183,7 +188,9 @@ int serial_getc(void)
  	if (status & SCIF_ERRORS)
  			handle_error();
  
@@ -1233,10 +1252,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.c u-boot-2012.
 +#endif
  	return ch;
  }
-diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.h u-boot-2012.10//drivers/serial/serial_sh.h
---- /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.h	2012-10-15 23:14:08.000000000 +0800
-+++ u-boot-2012.10//drivers/serial/serial_sh.h	2013-02-19 14:51:16.000000000 +0800
-@@ -224,6 +224,8 @@
+diff --git a/drivers/serial/serial_sh.h b/drivers/serial/serial_sh.h
+index a33334e..530ee96 100644
+--- a/drivers/serial/serial_sh.h
++++ b/drivers/serial/serial_sh.h
+@@ -224,6 +224,8 @@ struct uart_port {
  # define SCSPTR3 0xffc60020		/* 16 bit SCIF */
  # define SCIF_ORER 0x0001		/* Overrun error bit */
  # define SCSCR_INIT(port)	0x38	/* TIE=0,RIE=0,TE=1,RE=1,REIE=1 */
@@ -1245,7 +1265,7 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.h u-boot-2012.
  #else
  # error CPU subtype not defined
  #endif
-@@ -321,8 +323,6 @@
+@@ -321,8 +323,6 @@ struct uart_port {
  #define SCxSR_PER(port)\
  		(((port)->type == PORT_SCI) ? SCI_PER	: SCIF_PER)
  #define SCxSR_BRK(port)\
@@ -1254,9 +1274,11 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.h u-boot-2012.
  		(((port)->type == PORT_SCI) ? SCI_ORER	: SCIF_ORER)
  
  #if defined(CONFIG_CPU_SH7705) || \
-diff -Naur /home/cyb/opt/u-boot-2012.10//include/configs/cobra7727.h u-boot-2012.10//include/configs/cobra7727.h
---- /home/cyb/opt/u-boot-2012.10//include/configs/cobra7727.h	1970-01-01 08:00:00.000000000 +0800
-+++ u-boot-2012.10//include/configs/cobra7727.h	2013-03-23 17:28:34.000000000 +0800
+diff --git a/include/configs/cobra7727.h b/include/configs/cobra7727.h
+new file mode 100644
+index 0000000..9e29520
+--- /dev/null
++++ b/include/configs/cobra7727.h
 @@ -0,0 +1,125 @@
 +/*
 + * Configuation settings for the Hitachi Solution Engine 7727
@@ -1383,8 +1405,3 @@ diff -Naur /home/cyb/opt/u-boot-2012.10//include/configs/cobra7727.h u-boot-2012
 +#define CONFIG_SYS_HZ		1000
 +
 +#endif	/* __COBRA7727_H */
-diff -Naur /home/cyb/opt/u-boot-2012.10//makeconfig u-boot-2012.10//makeconfig
---- /home/cyb/opt/u-boot-2012.10//makeconfig	1970-01-01 08:00:00.000000000 +0800
-+++ u-boot-2012.10//makeconfig	2013-02-28 16:53:36.000000000 +0800
-@@ -0,0 +1 @@
-+make cobra7727_config
