@@ -1,0 +1,1390 @@
+diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/config.mk u-boot-2012.10//arch/sh/config.mk
+--- /home/cyb/opt/u-boot-2012.10//arch/sh/config.mk	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//arch/sh/config.mk	2013-03-06 09:43:18.000000000 +0800
+@@ -21,13 +21,13 @@
+ # MA 02111-1307 USA
+ #
+ 
+-CROSS_COMPILE ?= sh4-linux-
++CROSS_COMPILE ?= sh3-linux-
+ 
+ CONFIG_STANDALONE_LOAD_ADDR ?= 0x8C000000
+ ifeq ($(CPU),sh2)
+ CONFIG_STANDALONE_LOAD_ADDR += -EB
+ endif
+ 
+-PLATFORM_CPPFLAGS += -DCONFIG_SH -D__SH__
+-PLATFORM_LDFLAGS += -e $(CONFIG_SYS_TEXT_BASE) --defsym reloc_dst=$(CONFIG_SYS_TEXT_BASE)
++PLATFORM_CPPFLAGS += -DCONFIG_SH -D__SH__ -ml -Wa,--isa=sh3
++PLATFORM_LDFLAGS += -e $(CONFIG_SYS_TEXT_BASE) --defsym reloc_dst=$(CONFIG_SYS_TEXT_BASE) -EL -z muldefs
+ LDFLAGS_FINAL = --gc-sections
+diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh3.h u-boot-2012.10//arch/sh/include/asm/cpu_sh3.h
+--- /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh3.h	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//arch/sh/include/asm/cpu_sh3.h	2013-02-21 15:19:57.000000000 +0800
+@@ -1,6 +1,7 @@
+ /*
+  * (C) Copyright 2007-2009 Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+  * (C) Copyright 2007 Yoshihiro Shimoda <shimoda.yoshihiro@renesas.com>
++ * (C) Copyright 2013 Yibo Cai <cyb70289@gmail.com> 
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License as
+@@ -37,6 +38,8 @@
+ #include <asm/cpu_sh7710.h>
+ #elif defined(CONFIG_CPU_SH7720)
+ #include <asm/cpu_sh7720.h>
++#elif defined(CONFIG_CPU_SH7727)
++#include <asm/cpu_sh7727.h>
+ #else
+ #error "Unknown SH3 variant"
+ #endif
+diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh7727.h u-boot-2012.10//arch/sh/include/asm/cpu_sh7727.h
+--- /home/cyb/opt/u-boot-2012.10//arch/sh/include/asm/cpu_sh7727.h	1970-01-01 08:00:00.000000000 +0800
++++ u-boot-2012.10//arch/sh/include/asm/cpu_sh7727.h	2013-02-21 15:21:09.000000000 +0800
+@@ -0,0 +1,149 @@
++/*
++ * Copyright 2013 (C)
++ * Yibo Cai <cyb70289@gmail.com>
++ *
++ * SH7727 Internal I/O register
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#ifndef _ASM_CPU_SH7727_H_
++#define _ASM_CPU_SH7727_H_
++
++#define CACHE_OC_NUM_WAYS	4
++#define CCR_CACHE_INIT		0x0000000B
++
++/*	EXP	*/
++#define TRA		0xFFFFFFD0
++#define EXPEVT		0xFFFFFFD4
++#define INTEVT		0xFFFFFFD8
++#define	INTEVT2		0xA4000000
++
++/*	MMU	*/
++#define MMUCR		0xFFFFFFE0
++#define PTEH		0xFFFFFFF0
++#define PTEL		0xFFFFFFF4
++#define TTB		0xFFFFFFF8
++#define	TEA		0xFFFFFFFC
++
++/*	CACHE	*/
++#define CCR		0xFFFFFFEC
++#define	CCR2		0xA40000B0
++
++/*	INTC	*/
++#define IPRA		0xFFFFFEE2
++#define IPRB		0xFFFFFEE4
++#define IPRC		0xA4000016
++#define IPRD		0xA4000018
++#define IPRE		0xA400001A
++#define IPRF		0xA4000220
++#define IPRG		0xA4000222
++#define IRR0		0xA4000004
++#define IRR1		0xA4000006
++#define IRR2		0xA4000008
++#define IRR3		0xA4000224
++#define IRR4		0xA4000226
++#define ICR0		0xFFFFFEE0
++#define ICR1		0xA4000010
++#define ICR2		0xA4000012
++#define ICR3		0xA4000228
++#define PINTER		0xA4000014
++
++/*	BSC	*/
++#define BSC_BASE	0xFFFFFF60
++#define	BCR1		(BSC_BASE + 0x00)
++#define	BCR2		(BSC_BASE + 0x02)
++#define	WCR1		(BSC_BASE + 0x04)
++#define	WCR2		(BSC_BASE + 0x06)
++#define	MCR		(BSC_BASE + 0x08)
++#define	PCR		(BSC_BASE + 0x0C)
++#define	RTCSR		(BSC_BASE + 0x0E)
++#define	RTCNT		(BSC_BASE + 0x10)
++#define	RTCOR		(BSC_BASE + 0x12)
++#define	RFCR		(BSC_BASE + 0x14)
++#define	SDMR		0xFFFFE440
++
++/*	DMAC	*/
++
++/*	CPG	*/
++#define FRQCR		0xFFFFFF80
++#define	CKIO2CR		0xA400023A
++#define	WTCNT		0xFFFFFF84
++#define	WTCSR		0xFFFFFF86
++
++/*	LOW POWER MODE	*/
++
++/*	TMU	*/
++#define TMU_BASE	0xFFFFFE90
++
++/*	RTC	*/
++
++/*	SIOF	*/
++
++/*	SCI	*/
++
++/*	SCIF	*/
++#define SCIF2_BASE	0xA4000150
++
++/*	AFE	*/
++
++/*	LCDC	*/
++
++/*	USBH	*/
++
++/*	USBF	*/
++
++/*	PFC	*/
++#define PFC_BASE	0xA4000100
++#define PACR		(PFC_BASE + 0x00)
++#define PBCR		(PFC_BASE + 0x02)
++#define PCCR		(PFC_BASE + 0x04)
++#define PDCR		(PFC_BASE + 0x06)
++#define PECR		(PFC_BASE + 0x08)
++#define PFCR		(PFC_BASE + 0x0A)
++#define PGCR		(PFC_BASE + 0x0C)
++#define PHCR		(PFC_BASE + 0x0E)
++#define PJCR		(PFC_BASE + 0x10)
++#define PKCR		(PFC_BASE + 0x12)
++#define PLCR		(PFC_BASE + 0x14)
++#define PMCR		(PFC_BASE + 0x18)
++#define	SCPCR		(PFC_BASE + 0x16)
++
++/*	I/O Port	*/
++#define PORT_BASE	0xA4000100
++#define PADR		(PORT_BASE + 0x20)
++#define PBDR		(PORT_BASE + 0x22)
++#define PCDR		(PORT_BASE + 0x24)
++#define PDDR		(PORT_BASE + 0x26)
++#define PEDR		(PORT_BASE + 0x28)
++#define PFDR		(PORT_BASE + 0x2A)
++#define PGDR		(PORT_BASE + 0x2C)
++#define PHDR		(PORT_BASE + 0x2E)
++#define PJDR		(PORT_BASE + 0x30)
++#define PKDR		(PORT_BASE + 0x32)
++#define PLDR		(PORT_BASE + 0x34)
++#define PMDR		(PORT_BASE + 0x38)
++#define	SCPDR		(PORT_BASE + 0x36)
++
++/*	PCC	*/
++
++/*	AD	*/
++
++/*	DA	*/
++
++/*	H-UDI	*/
++
++#endif /* _ASM_CPU_SH7727_H_ */
+diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/lib/Makefile u-boot-2012.10//arch/sh/lib/Makefile
+--- /home/cyb/opt/u-boot-2012.10//arch/sh/lib/Makefile	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//arch/sh/lib/Makefile	2013-02-17 19:53:59.000000000 +0800
+@@ -23,7 +23,18 @@
+ LIB	= $(obj)lib$(ARCH).o
+ LIBGCC	= $(obj)libgcc.o
+ 
+-SOBJS-y	+=
++#########################
++SOBJS-y	+= ashiftrt.o
++SOBJS-y	+= ashiftlt.o
++SOBJS-y	+= lshiftrt.o
++SOBJS-y	+= ashrsi3.o
++SOBJS-y += udivsi3_i4i.o
++SOBJS-y	+= movmem.o
++COBJS-y	+= lshrdi3.o
++COBJS-y	+= ashldi3.o
++#########################
++
++SOBJS-y +=
+ GLSOBJS	+= ashiftrt.o
+ GLSOBJS	+= ashiftlt.o
+ GLSOBJS	+= lshiftrt.o
+diff -Naur /home/cyb/opt/u-boot-2012.10//arch/sh/lib/udivsi3_i4i.S u-boot-2012.10//arch/sh/lib/udivsi3_i4i.S
+--- /home/cyb/opt/u-boot-2012.10//arch/sh/lib/udivsi3_i4i.S	1970-01-01 08:00:00.000000000 +0800
++++ u-boot-2012.10//arch/sh/lib/udivsi3_i4i.S	2013-02-19 08:50:05.000000000 +0800
+@@ -0,0 +1,666 @@
++/* Copyright (C) 1994, 1995, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
++   2004, 2005, 2006
++   Free Software Foundation, Inc.
++
++This file is free software; you can redistribute it and/or modify it
++under the terms of the GNU General Public License as published by the
++Free Software Foundation; either version 2, or (at your option) any
++later version.
++
++In addition to the permissions in the GNU General Public License, the
++Free Software Foundation gives you unlimited permission to link the
++compiled version of this file into combinations with other programs,
++and to distribute those combinations without any restriction coming
++from the use of this file.  (The General Public License restrictions
++do apply in other respects; for example, they cover modification of
++the file, and distribution when not linked into a combine
++executable.)
++
++This file is distributed in the hope that it will be useful, but
++WITHOUT ANY WARRANTY; without even the implied warranty of
++MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++General Public License for more details.
++
++You should have received a copy of the GNU General Public License
++along with this program; see the file COPYING.  If not, write to
++the Free Software Foundation, 51 Franklin Street, Fifth Floor,
++Boston, MA 02110-1301, USA.  */
++
++!! libgcc routines for the Renesas / SuperH SH CPUs.
++!! Contributed by Steve Chamberlain.
++!! sac@cygnus.com
++
++!! ashiftrt_r4_x, ___ashrsi3, ___ashlsi3, ___lshrsi3 routines
++!! recoded in assembly by Toshiyasu Morita
++!! tm@netcom.com
++
++/* SH2 optimizations for ___ashrsi3, ___ashlsi3, ___lshrsi3 and
++   ELF local label prefixes by J"orn Rennecke
++   amylaar@cygnus.com  */
++
++/* This code used shld, thus is not suitable for SH1 / SH2.  */
++
++/* Signed / unsigned division without use of FPU, optimized for SH4.
++   Uses a lookup table for divisors in the range -128 .. +128, and
++   div1 with case distinction for larger divisors in three more ranges.
++   The code is lumped together with the table to allow the use of mova.  */
++#ifdef CONFIG_CPU_LITTLE_ENDIAN
++#define L_LSB 0
++#define L_LSWMSB 1
++#define L_MSWLSB 2
++#else
++#define L_LSB 3
++#define L_LSWMSB 2
++#define L_MSWLSB 1
++#endif
++
++	.balign 4
++	.global	__udivsi3_i4i
++	.global	__udivsi3_i4
++	.set	__udivsi3_i4, __udivsi3_i4i
++	.type	__udivsi3_i4i, @function
++__udivsi3_i4i:
++	mov.w c128_w, r1
++	div0u
++	mov r4,r0
++	shlr8 r0
++	cmp/hi r1,r5
++	extu.w r5,r1
++	bf udiv_le128
++	cmp/eq r5,r1
++	bf udiv_ge64k
++	shlr r0
++	mov r5,r1
++	shll16 r5
++	mov.l r4,@-r15
++	div1 r5,r0
++	mov.l r1,@-r15
++	div1 r5,r0
++	div1 r5,r0
++	bra udiv_25
++	div1 r5,r0
++
++div_le128:
++	mova div_table_ix,r0
++	bra div_le128_2
++	mov.b @(r0,r5),r1
++udiv_le128:
++	mov.l r4,@-r15
++	mova div_table_ix,r0
++	mov.b @(r0,r5),r1
++	mov.l r5,@-r15
++div_le128_2:
++	mova div_table_inv,r0
++	mov.l @(r0,r1),r1
++	mov r5,r0
++	tst #0xfe,r0
++	mova div_table_clz,r0
++	dmulu.l r1,r4
++	mov.b @(r0,r5),r1
++	bt/s div_by_1
++	mov r4,r0
++	mov.l @r15+,r5
++	sts mach,r0
++	/* clrt */
++	addc r4,r0
++	mov.l @r15+,r4
++	rotcr r0
++	rts
++	shld r1,r0
++
++div_by_1_neg:
++	neg r4,r0
++div_by_1:
++	mov.l @r15+,r5
++	rts
++	mov.l @r15+,r4
++
++div_ge64k:
++	bt/s div_r8
++	div0u
++	shll8 r5
++	bra div_ge64k_2
++	div1 r5,r0
++udiv_ge64k:
++	cmp/hi r0,r5
++	mov r5,r1
++	bt udiv_r8
++	shll8 r5
++	mov.l r4,@-r15
++	div1 r5,r0
++	mov.l r1,@-r15
++div_ge64k_2:
++	div1 r5,r0
++	mov.l zero_l,r1
++	.rept 4
++	div1 r5,r0
++	.endr
++	mov.l r1,@-r15
++	div1 r5,r0
++	mov.w m256_w,r1
++	div1 r5,r0
++	mov.b r0,@(L_LSWMSB,r15)
++	xor r4,r0
++	and r1,r0
++	bra div_ge64k_end
++	xor r4,r0
++	
++div_r8:
++	shll16 r4
++	bra div_r8_2
++	shll8 r4
++udiv_r8:
++	mov.l r4,@-r15
++	shll16 r4
++	clrt
++	shll8 r4
++	mov.l r5,@-r15
++div_r8_2:
++	rotcl r4
++	mov r0,r1
++	div1 r5,r1
++	mov r4,r0
++	rotcl r0
++	mov r5,r4
++	div1 r5,r1
++	.rept 5
++	rotcl r0; div1 r5,r1
++	.endr
++	rotcl r0
++	mov.l @r15+,r5
++	div1 r4,r1
++	mov.l @r15+,r4
++	rts
++	rotcl r0
++
++	.global	__sdivsi3_i4i
++	.global __sdivsi3_i4
++	.global	__sdivsi3
++	.set	__sdivsi3_i4, __sdivsi3_i4i
++	.set	__sdivsi3, __sdivsi3_i4i
++	.type	__sdivsi3_i4i, @function
++	/* This is link-compatible with a __sdivsi3 call,
++	   but we effectively clobber only r1.  */
++__sdivsi3_i4i:
++	mov.l r4,@-r15
++	cmp/pz r5
++	mov.w c128_w, r1
++	bt/s pos_divisor
++	cmp/pz r4
++	mov.l r5,@-r15
++	neg r5,r5
++	bt/s neg_result
++	cmp/hi r1,r5
++	neg r4,r4
++pos_result:
++	extu.w r5,r0
++	bf div_le128
++	cmp/eq r5,r0
++	mov r4,r0
++	shlr8 r0
++	bf/s div_ge64k
++	cmp/hi r0,r5
++	div0u
++	shll16 r5
++	div1 r5,r0
++	div1 r5,r0
++	div1 r5,r0
++udiv_25:
++	mov.l zero_l,r1
++	div1 r5,r0
++	div1 r5,r0
++	mov.l r1,@-r15
++	.rept 3
++	div1 r5,r0
++	.endr
++	mov.b r0,@(L_MSWLSB,r15)
++	xtrct r4,r0
++	swap.w r0,r0
++	.rept 8
++	div1 r5,r0
++	.endr
++	mov.b r0,@(L_LSWMSB,r15)
++div_ge64k_end:
++	.rept 8
++	div1 r5,r0
++	.endr
++	mov.l @r15+,r4 ! zero-extension and swap using LS unit.
++	extu.b r0,r0
++	mov.l @r15+,r5
++	or r4,r0
++	mov.l @r15+,r4
++	rts
++	rotcl r0
++
++div_le128_neg:
++	tst #0xfe,r0
++	mova div_table_ix,r0
++	mov.b @(r0,r5),r1
++	mova div_table_inv,r0
++	bt/s div_by_1_neg
++	mov.l @(r0,r1),r1
++	mova div_table_clz,r0
++	dmulu.l r1,r4
++	mov.b @(r0,r5),r1
++	mov.l @r15+,r5
++	sts mach,r0
++	/* clrt */
++	addc r4,r0
++	mov.l @r15+,r4
++	rotcr r0
++	shld r1,r0
++	rts
++	neg r0,r0
++
++pos_divisor:
++	mov.l r5,@-r15
++	bt/s pos_result
++	cmp/hi r1,r5
++	neg r4,r4
++neg_result:
++	extu.w r5,r0
++	bf div_le128_neg
++	cmp/eq r5,r0
++	mov r4,r0
++	shlr8 r0
++	bf/s div_ge64k_neg
++	cmp/hi r0,r5
++	div0u
++	mov.l zero_l,r1
++	shll16 r5
++	div1 r5,r0
++	mov.l r1,@-r15
++	.rept 7
++	div1 r5,r0
++	.endr
++	mov.b r0,@(L_MSWLSB,r15)
++	xtrct r4,r0
++	swap.w r0,r0
++	.rept 8
++	div1 r5,r0
++	.endr
++	mov.b r0,@(L_LSWMSB,r15)
++div_ge64k_neg_end:
++	.rept 8
++	div1 r5,r0
++	.endr
++	mov.l @r15+,r4 ! zero-extension and swap using LS unit.
++	extu.b r0,r1
++	mov.l @r15+,r5
++	or r4,r1
++div_r8_neg_end:
++	mov.l @r15+,r4
++	rotcl r1
++	rts
++	neg r1,r0
++
++div_ge64k_neg:
++	bt/s div_r8_neg
++	div0u
++	shll8 r5
++	mov.l zero_l,r1
++	.rept 6
++	div1 r5,r0
++	.endr
++	mov.l r1,@-r15
++	div1 r5,r0
++	mov.w m256_w,r1
++	div1 r5,r0
++	mov.b r0,@(L_LSWMSB,r15)
++	xor r4,r0
++	and r1,r0
++	bra div_ge64k_neg_end
++	xor r4,r0
++
++c128_w:
++	.word 128
++
++div_r8_neg:
++	clrt
++	shll16 r4
++	mov r4,r1
++	shll8 r1
++	mov r5,r4
++	.rept 7
++	rotcl r1; div1 r5,r0
++	.endr
++	mov.l @r15+,r5
++	rotcl r1
++	bra div_r8_neg_end
++	div1 r4,r0
++
++m256_w:
++	.word 0xff00
++/* This table has been generated by divtab-sh4.c.  */
++	.balign 4
++div_table_clz:
++	.byte	0
++	.byte	1
++	.byte	0
++	.byte	-1
++	.byte	-1
++	.byte	-2
++	.byte	-2
++	.byte	-2
++	.byte	-2
++	.byte	-3
++	.byte	-3
++	.byte	-3
++	.byte	-3
++	.byte	-3
++	.byte	-3
++	.byte	-3
++	.byte	-3
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-4
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-5
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++	.byte	-6
++/* Lookup table translating positive divisor to index into table of
++   normalized inverse.  N.B. the '0' entry is also the last entry of the
++ previous table, and causes an unaligned access for division by zero.  */
++div_table_ix:
++	.byte	-6
++	.byte	-128
++	.byte	-128
++	.byte	0
++	.byte	-128
++	.byte	-64
++	.byte	0
++	.byte	64
++	.byte	-128
++	.byte	-96
++	.byte	-64
++	.byte	-32
++	.byte	0
++	.byte	32
++	.byte	64
++	.byte	96
++	.byte	-128
++	.byte	-112
++	.byte	-96
++	.byte	-80
++	.byte	-64
++	.byte	-48
++	.byte	-32
++	.byte	-16
++	.byte	0
++	.byte	16
++	.byte	32
++	.byte	48
++	.byte	64
++	.byte	80
++	.byte	96
++	.byte	112
++	.byte	-128
++	.byte	-120
++	.byte	-112
++	.byte	-104
++	.byte	-96
++	.byte	-88
++	.byte	-80
++	.byte	-72
++	.byte	-64
++	.byte	-56
++	.byte	-48
++	.byte	-40
++	.byte	-32
++	.byte	-24
++	.byte	-16
++	.byte	-8
++	.byte	0
++	.byte	8
++	.byte	16
++	.byte	24
++	.byte	32
++	.byte	40
++	.byte	48
++	.byte	56
++	.byte	64
++	.byte	72
++	.byte	80
++	.byte	88
++	.byte	96
++	.byte	104
++	.byte	112
++	.byte	120
++	.byte	-128
++	.byte	-124
++	.byte	-120
++	.byte	-116
++	.byte	-112
++	.byte	-108
++	.byte	-104
++	.byte	-100
++	.byte	-96
++	.byte	-92
++	.byte	-88
++	.byte	-84
++	.byte	-80
++	.byte	-76
++	.byte	-72
++	.byte	-68
++	.byte	-64
++	.byte	-60
++	.byte	-56
++	.byte	-52
++	.byte	-48
++	.byte	-44
++	.byte	-40
++	.byte	-36
++	.byte	-32
++	.byte	-28
++	.byte	-24
++	.byte	-20
++	.byte	-16
++	.byte	-12
++	.byte	-8
++	.byte	-4
++	.byte	0
++	.byte	4
++	.byte	8
++	.byte	12
++	.byte	16
++	.byte	20
++	.byte	24
++	.byte	28
++	.byte	32
++	.byte	36
++	.byte	40
++	.byte	44
++	.byte	48
++	.byte	52
++	.byte	56
++	.byte	60
++	.byte	64
++	.byte	68
++	.byte	72
++	.byte	76
++	.byte	80
++	.byte	84
++	.byte	88
++	.byte	92
++	.byte	96
++	.byte	100
++	.byte	104
++	.byte	108
++	.byte	112
++	.byte	116
++	.byte	120
++	.byte	124
++	.byte	-128
++/* 1/64 .. 1/127, normalized.  There is an implicit leading 1 in bit 32.  */
++	.balign 4
++zero_l:
++	.long	0x0
++	.long	0xF81F81F9
++	.long	0xF07C1F08
++	.long	0xE9131AC0
++	.long	0xE1E1E1E2
++	.long	0xDAE6076C
++	.long	0xD41D41D5
++	.long	0xCD856891
++	.long	0xC71C71C8
++	.long	0xC0E07039
++	.long	0xBACF914D
++	.long	0xB4E81B4F
++	.long	0xAF286BCB
++	.long	0xA98EF607
++	.long	0xA41A41A5
++	.long	0x9EC8E952
++	.long	0x9999999A
++	.long	0x948B0FCE
++	.long	0x8F9C18FA
++	.long	0x8ACB90F7
++	.long	0x86186187
++	.long	0x81818182
++	.long	0x7D05F418
++	.long	0x78A4C818
++	.long	0x745D1746
++	.long	0x702E05C1
++	.long	0x6C16C16D
++	.long	0x68168169
++	.long	0x642C8591
++	.long	0x60581606
++	.long	0x5C9882BA
++	.long	0x58ED2309
++div_table_inv:
++	.long	0x55555556
++	.long	0x51D07EAF
++	.long	0x4E5E0A73
++	.long	0x4AFD6A06
++	.long	0x47AE147B
++	.long	0x446F8657
++	.long	0x41414142
++	.long	0x3E22CBCF
++	.long	0x3B13B13C
++	.long	0x38138139
++	.long	0x3521CFB3
++	.long	0x323E34A3
++	.long	0x2F684BDB
++	.long	0x2C9FB4D9
++	.long	0x29E4129F
++	.long	0x27350B89
++	.long	0x24924925
++	.long	0x21FB7813
++	.long	0x1F7047DD
++	.long	0x1CF06ADB
++	.long	0x1A7B9612
++	.long	0x18118119
++	.long	0x15B1E5F8
++	.long	0x135C8114
++	.long	0x11111112
++	.long	0xECF56BF
++	.long	0xC9714FC
++	.long	0xA6810A7
++	.long	0x8421085
++	.long	0x624DD30
++	.long	0x4104105
++	.long	0x2040811
++	/* maximum error: 0.987342 scaled: 0.921875*/
+diff -Naur /home/cyb/opt/u-boot-2012.10//board/cobra7727/cobra7727.c u-boot-2012.10//board/cobra7727/cobra7727.c
+--- /home/cyb/opt/u-boot-2012.10//board/cobra7727/cobra7727.c	1970-01-01 08:00:00.000000000 +0800
++++ u-boot-2012.10//board/cobra7727/cobra7727.c	2013-02-19 09:15:32.000000000 +0800
+@@ -0,0 +1,60 @@
++/*
++ * Copyright (C) 2007
++ * Yoshihiro Shimoda <shimoda.yoshihiro@renesas.com>
++ *
++ * Copyright (C) 2007
++ * Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
++ *
++ * Copyright (C) 2007
++ * Kenati Technologies, Inc.
++ *
++ * Copyright (C) 2013
++ * Yibo Cai <cyb70289@gmail.com>
++ *
++ * board/cobra7727/cobra7727.c
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#include <common.h>
++#include <asm/io.h>
++#include <asm/processor.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++int checkboard(void)
++{
++	puts("BOARD: COBRA SH7727\n");
++	return 0;
++}
++
++int board_init(void)
++{
++	return 0;
++}
++
++int dram_init(void)
++{
++	gd->bd->bi_memstart = CONFIG_SYS_SDRAM_BASE;
++	gd->bd->bi_memsize = CONFIG_SYS_SDRAM_SIZE;
++	printf("DRAM:  %dMB\n", CONFIG_SYS_SDRAM_SIZE / (1024 * 1024));
++	return 0;
++}
++
++void led_set_state(unsigned short value)
++{
++//	outw(value & 0xFF, LED_BASE);
++}
+diff -Naur /home/cyb/opt/u-boot-2012.10//board/cobra7727/lowlevel_init.S u-boot-2012.10//board/cobra7727/lowlevel_init.S
+--- /home/cyb/opt/u-boot-2012.10//board/cobra7727/lowlevel_init.S	1970-01-01 08:00:00.000000000 +0800
++++ u-boot-2012.10//board/cobra7727/lowlevel_init.S	2013-02-21 15:17:23.000000000 +0800
+@@ -0,0 +1,118 @@
++/*
++ * (C) Copyright 2013
++ * Yibo Cai <cyb70289@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#include <asm/macro.h>
++
++	.global	lowlevel_init
++
++	.text
++	.align	2
++
++lowlevel_init:
++
++	write16	WTCSR_A, WTCSR_D
++
++	write16	WTCNT_A, WTCNT_D
++
++	write16	FRQCR_A, FRQCR_D
++
++	write16	CKIO2CR_A, CKIO2CR_D
++
++	write16	BCR1_A,	BCR1_D
++
++	write16	BCR2_A, BCR2_D
++
++	write16	WCR1_A, WCR1_D
++
++	write16	WCR2_A, WCR2_D
++
++	write16	MCR_A, MCR_D
++
++	write16	RTCOR_A, RTCOR_D
++
++	write16	RTCNT_A, RTCNT_D
++
++	write16	RFCR_A, RFCR_D
++
++	write16	RTCSR_A, RTCSR_D
++
++	! Wait for 8 refresh cycles
++	mov.l	RFCR_A, r1
++	mov.l	EIGHT, r2
++refresh8:
++	mov.w	@r1, r0
++	cmp/hs	r2, r0
++	bf	refresh8
++
++	write8	SDMR_A, SDMR_D
++
++	write32	CCR_A, CCR_D
++
++	rts
++	nop
++
++	.align 4
++
++FRQCR_A:	.long	0xFFFFFF80	/* FRQCR Address */
++CKIO2CR_A:	.long	0xA400023A
++WTCNT_A:	.long	0xFFFFFF84
++WTCSR_A:	.long	0xFFFFFF86
++
++FRQCR_D:	.word	0xA100		/* I:B:P=12:4:4 */
++CKIO2CR_D:	.word	0x0000
++WTCNT_D:	.word	0x5A0C
++WTCSR_D:	.word	0xA505
++
++	.align 4
++
++#define BSC_BASE	0xFFFFFF60
++BCR1_A:		.long	BSC_BASE + 0x00
++BCR2_A:		.long	BSC_BASE + 0x02
++WCR1_A:		.long	BSC_BASE + 0x04
++WCR2_A:		.long	BSC_BASE + 0x06
++MCR_A:		.long	BSC_BASE + 0x08
++!PCR_A:		.long	BSC_BASE + 0x0C
++RTCSR_A:	.long	BSC_BASE + 0x0E
++RTCNT_A:	.long	BSC_BASE + 0x10
++RTCOR_A:	.long	BSC_BASE + 0x12
++RFCR_A:		.long	BSC_BASE + 0x14
++SDMR_A:		.long	0xFFFFE440
++
++BCR1_D:		.word	0x5008
++BCR2_D:		.word	0x3FB0
++WCR1_D:		.word	0x3F30
++WCR2_D:		.word	0xFFD9
++MCR_D:		.word	0x512C
++!PCR_D:		.word	
++RTCSR_D:	.word	0xA508
++RTCNT_D:	.word	0xA500
++RTCOR_D:	.word	0xA57C
++RFCR_D:		.word	0xA400
++
++	.align 4
++
++SDMR_D:		.byte	0x00
++
++	.align 4
++
++CCR_A:		.long	0xFFFFFFEC
++CCR_D:		.long	0x0000000B
++
++EIGHT:		.long	0x00000008
+diff -Naur /home/cyb/opt/u-boot-2012.10//board/cobra7727/Makefile u-boot-2012.10//board/cobra7727/Makefile
+--- /home/cyb/opt/u-boot-2012.10//board/cobra7727/Makefile	1970-01-01 08:00:00.000000000 +0800
++++ u-boot-2012.10//board/cobra7727/Makefile	2013-03-24 12:49:06.000000000 +0800
+@@ -0,0 +1,52 @@
++#
++# Copyright (C) 2013
++# Yibo Cai <cyb70289@gmail.com>
++#
++# Copyright (C) 2007
++# Yoshihiro Shimoda <shimoda.yoshihiro@renesas.com>
++#
++# Copyright (C) 2007
++# Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
++#
++# Copyright (C) 2007
++# Kenati Technologies, Inc.
++#
++# board/cobra7727/Makefile
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License as
++# published by the Free Software Foundation; either version 2 of
++# the License, or (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++# MA 02111-1307 USA
++
++include $(TOPDIR)/config.mk
++
++LIB	= $(obj)lib$(BOARD).o
++
++COBJS	:= cobra7727.o
++SOBJS	:= lowlevel_init.o
++
++SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
++OBJS	:= $(addprefix $(obj),$(COBJS))
++SOBJS	:= $(addprefix $(obj),$(SOBJS))
++
++$(LIB):	$(OBJS) $(SOBJS)
++	$(call cmd_link_o_target, $(OBJS) $(SOBJS))
++
++#########################################################################
++
++# defines $(obj).depend target
++include $(SRCTREE)/rules.mk
++
++sinclude $(obj).depend
++
++#########################################################################
+diff -Naur /home/cyb/opt/u-boot-2012.10//boards.cfg u-boot-2012.10//boards.cfg
+--- /home/cyb/opt/u-boot-2012.10//boards.cfg	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//boards.cfg	2013-02-17 15:23:46.000000000 +0800
+@@ -1073,6 +1073,7 @@
+ rsk7269                      sh          sh2         rsk7269             renesas        -
+ mpr2                         sh          sh3         mpr2                -              -
+ ms7720se                     sh          sh3         ms7720se            -              -
++cobra7727                    sh          sh3         cobra7727           -              -
+ shmin                        sh          sh3         shmin               -              -
+ espt                         sh          sh4         espt                -              -
+ ms7722se                     sh          sh4         ms7722se            -              -
+diff -Naur /home/cyb/opt/u-boot-2012.10//common/env_embedded.c u-boot-2012.10//common/env_embedded.c
+--- /home/cyb/opt/u-boot-2012.10//common/env_embedded.c	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//common/env_embedded.c	2013-02-20 16:44:08.000000000 +0800
+@@ -213,8 +213,11 @@
+  * tools/envcrc, they are placed in the
+  * .data/.sdata section.
+  *
++ * Changed by Yibo Cai, 2013
+  */
++#if 0
+ unsigned long env_size __PPCTEXT__ = sizeof(env_t);
++#endif
+ 
+ /*
+  * Add in absolutes.
+diff -Naur /home/cyb/opt/u-boot-2012.10//common/env_flash.c u-boot-2012.10//common/env_flash.c
+--- /home/cyb/opt/u-boot-2012.10//common/env_flash.c	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//common/env_flash.c	2013-02-20 16:52:14.000000000 +0800
+@@ -55,8 +55,8 @@
+ static env_t *flash_addr = (env_t *)CONFIG_ENV_ADDR;
+ 
+ #else /* ! ENV_IS_EMBEDDED */
+-
+ env_t *env_ptr = (env_t *)CONFIG_ENV_ADDR;
++
+ static env_t *flash_addr = (env_t *)CONFIG_ENV_ADDR;
+ #endif /* ENV_IS_EMBEDDED */
+ 
+diff -Naur /home/cyb/opt/u-boot-2012.10//config.mk u-boot-2012.10//config.mk
+--- /home/cyb/opt/u-boot-2012.10//config.mk	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//config.mk	2013-03-14 11:02:13.000000000 +0800
+@@ -186,7 +186,9 @@
+ # who are porting old code to latest mainline but not updating $(AR).
+ ARFLAGS = $(error update your Makefile to use cmd_link_o_target and not AR)
+ RELFLAGS= $(PLATFORM_RELFLAGS)
++ifdef	DEBUG
+ DBGFLAGS= -g # -DDEBUG
++endif
+ OPTFLAGS= -Os #-fomit-frame-pointer
+ 
+ OBJCFLAGS += --gap-fill=0xff
+diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/mtd/cfi_flash.c u-boot-2012.10//drivers/mtd/cfi_flash.c
+--- /home/cyb/opt/u-boot-2012.10//drivers/mtd/cfi_flash.c	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//drivers/mtd/cfi_flash.c	2013-03-24 12:54:41.000000000 +0800
+@@ -553,7 +553,7 @@
+ 	default:
+ 		retval = 0;
+ 	}
+-	debug ("flash_is_busy: %d\n", retval);
++//	debug ("flash_is_busy: %d\n", retval);
+ 	return retval;
+ }
+ 
+diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.c u-boot-2012.10//drivers/serial/serial_sh.c
+--- /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.c	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//drivers/serial/serial_sh.c	2013-02-23 13:31:29.000000000 +0800
+@@ -2,6 +2,7 @@
+  * SuperH SCIF device driver.
+  * Copyright (C) 2007,2008,2010 Nobuhiro Iwamatsu
+  * Copyright (C) 2002 - 2008  Paul Mundt
++ * Copyright (C) 2013 Yibo Cai
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -150,8 +151,10 @@
+ {
+ 	sci_in(&sh_sci, SCxSR);
+ 	sci_out(&sh_sci, SCxSR, SCxSR_ERROR_CLEAR(&sh_sci));
++#if !defined(CONFIG_CPU_SH7727)
+ 	sci_in(&sh_sci, SCLSR);
+ 	sci_out(&sh_sci, SCLSR, 0x00);
++#endif
+ }
+ 
+ int serial_getc_check(void)
+@@ -162,8 +165,10 @@
+ 
+ 	if (status & SCIF_ERRORS)
+ 		handle_error();
++#if !defined(CONFIG_CPU_SH7727)
+ 	if (sci_in(&sh_sci, SCLSR) & SCxSR_ORER(&sh_sci))
+ 		handle_error();
++#endif
+ 	return status & (SCIF_DR | SCxSR_RDxF(&sh_sci));
+ }
+ 
+@@ -183,7 +188,9 @@
+ 	if (status & SCIF_ERRORS)
+ 			handle_error();
+ 
++#if !defined(CONFIG_CPU_SH7727)
+ 	if (sci_in(&sh_sci, SCLSR) & SCxSR_ORER(&sh_sci))
+ 		handle_error();
++#endif
+ 	return ch;
+ }
+diff -Naur /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.h u-boot-2012.10//drivers/serial/serial_sh.h
+--- /home/cyb/opt/u-boot-2012.10//drivers/serial/serial_sh.h	2012-10-15 23:14:08.000000000 +0800
++++ u-boot-2012.10//drivers/serial/serial_sh.h	2013-02-19 14:51:16.000000000 +0800
+@@ -224,6 +224,8 @@
+ # define SCSPTR3 0xffc60020		/* 16 bit SCIF */
+ # define SCIF_ORER 0x0001		/* Overrun error bit */
+ # define SCSCR_INIT(port)	0x38	/* TIE=0,RIE=0,TE=1,RE=1,REIE=1 */
++#elif defined(CONFIG_CPU_SH7727)
++# define SCSCR_INIT(port)  	0x30	/* TIE=0,RIE=0,TE=1,RE=1 */
+ #else
+ # error CPU subtype not defined
+ #endif
+@@ -321,8 +323,6 @@
+ #define SCxSR_PER(port)\
+ 		(((port)->type == PORT_SCI) ? SCI_PER	: SCIF_PER)
+ #define SCxSR_BRK(port)\
+-		((port)->type == PORT_SCI) ? 0x00		: SCIF_BRK)
+-#define SCxSR_ORER(port)\
+ 		(((port)->type == PORT_SCI) ? SCI_ORER	: SCIF_ORER)
+ 
+ #if defined(CONFIG_CPU_SH7705) || \
+diff -Naur /home/cyb/opt/u-boot-2012.10//include/configs/cobra7727.h u-boot-2012.10//include/configs/cobra7727.h
+--- /home/cyb/opt/u-boot-2012.10//include/configs/cobra7727.h	1970-01-01 08:00:00.000000000 +0800
++++ u-boot-2012.10//include/configs/cobra7727.h	2013-03-23 17:28:34.000000000 +0800
+@@ -0,0 +1,125 @@
++/*
++ * Configuation settings for the Hitachi Solution Engine 7727
++ *
++ * Copied and modified from ms7720se.h
++ *
++ * Copyright (C) 2013 Yibo Cai <cyb70289@gmail.com>
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#ifndef __COBRA7727_H
++#define __COBRA7727_H
++
++/*#define DEBUG*/
++
++#define CONFIG_SH		1
++#define CONFIG_SH3		1
++#define CONFIG_CPU_SH7727	1
++#define CONFIG_COBRA7727	1
++
++#define CONFIG_CMD_FLASH
++#define CONFIG_CMD_SAVEENV
++#define CONFIG_CMD_MEMORY
++#define	CONFIG_CMD_MEMINFO
++#define CONFIG_CMD_JFFS2
++#define	CONFIG_CMD_LOADB
++#define	CONFIG_CMD_IMI
++
++#define CONFIG_BAUDRATE		115200
++#define CONFIG_BOOTARGS		"console=ttySC1,115200 rootfstype=jffs2 root=/dev/mtdblock2"
++#define CONFIG_LOADADDR		0x8C800000	/* default value of "loadaddr" */
++
++#define	CONFIG_STANDALONE_LOAD_ADDR	0x8C000000
++
++#define CONFIG_VERSION_VARIABLE
++#undef  CONFIG_SHOW_BOOT_PROGRESS
++
++/* Boot control */
++#define CONFIG_BOOTDELAY		3
++#define	CONFIG_AUTOBOOT_KEYED
++#define	CONFIG_AUTOBOOT_PROMPT	\
++	"\nAutoboot in %d seconds, stop with ENTER\n",bootdelay
++#define CONFIG_AUTOBOOT_STOP_STR	"\r"
++#define	CONFIG_AUTOBOOT_STOP_STR2	"\n"
++#define	CONFIG_BOOTCOMMAND		"bootm a0020000"
++
++/* MEMORY */
++#define COBRA7727_SDRAM_BASE		0x8C000000
++#define COBRA7727_FLASH_BASE_1		0xA0000000
++#define COBRA7727_FLASH_BANK_SIZE	(8 * 1024 * 1024)
++
++#define CONFIG_SYS_TEXT_BASE	0x8CF80000	/* leave last 512K to uboot */
++#define CONFIG_SYS_LONGHELP		/* undef to save memory	*/
++#define CONFIG_SYS_PROMPT	"=> "	/* Monitor Command Prompt */
++#define CONFIG_SYS_CBSIZE	256	/* Buffer size for input from the Console */
++#define CONFIG_SYS_PBSIZE	256	/* Buffer size for Console output */
++#define CONFIG_SYS_MAXARGS	16	/* max args accepted for monitor commands */
++/* Buffer size for Boot Arguments passed to kernel */
++#define CONFIG_SYS_BARGSIZE	512
++/* List of legal baudrate settings for this board */
++#define CONFIG_SYS_BAUDRATE_TABLE	{ 115200 }
++
++/* JFFS */
++#define CONFIG_SYS_JFFS2_FIRST_BANK	0
++#define CONFIG_SYS_JFFS2_NUM_BANKS	1
++#define	CONFIG_SYS_JFFS2_FIRST_SECTOR	39
++
++/* SCIF */
++#define CONFIG_SCIF_CONSOLE	1
++#define CONFIG_CONS_SCIF2	1
++
++#define CONFIG_SYS_MEMTEST_START	COBRA7727_SDRAM_BASE
++#define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + (12 * 1024 * 1024))
++
++#define CONFIG_SYS_SDRAM_BASE		COBRA7727_SDRAM_BASE
++#define CONFIG_SYS_SDRAM_SIZE		(16 * 1024 * 1024)
++
++#define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR	/* not used */
++#define CONFIG_SYS_MONITOR_BASE		COBRA7727_FLASH_BASE_1
++#define CONFIG_SYS_MONITOR_LEN		(128 * 1024)
++#define CONFIG_SYS_MALLOC_LEN		(512 * 1024)
++#define CONFIG_SYS_BOOTMAPSZ		(8 * 1024 * 1024)
++
++/* FLASH */
++#define CONFIG_SYS_FLASH_CFI
++#define CONFIG_FLASH_CFI_DRIVER
++#undef  CONFIG_SYS_FLASH_QUIET_TEST
++#define CONFIG_SYS_FLASH_EMPTY_INFO	/* print 'E' for empty sector on flinfo */
++
++#define CONFIG_SYS_FLASH_BASE		COBRA7727_FLASH_BASE_1
++
++#define CONFIG_SYS_MAX_FLASH_SECT	142
++#define CONFIG_SYS_MAX_FLASH_BANKS	1
++#define CONFIG_SYS_FLASH_BANKS_LIST	{ CONFIG_SYS_FLASH_BASE }
++
++#define CONFIG_ENV_IS_IN_FLASH
++#define	CONFIG_ENV_MIN_ENTRIES		32
++#define	CONFIG_ENV_MAX_ENTRIES		64
++#define CONFIG_ENV_SECT_SIZE		(8 * 1024)	/* one sector */
++#define CONFIG_ENV_OFFSET		(8 * 1024)	/* skip first sector */
++#define CONFIG_SYS_FLASH_ERASE_TOUT	120000
++#define CONFIG_SYS_FLASH_WRITE_TOUT	500
++
++/* Board Clock */
++#define CONFIG_SYS_CLK_FREQ	32000000
++#define CONFIG_SYS_TMU_CLK_DIV	4	/* 4 (default), 16, 64, 256 or 1024 */
++#define CONFIG_SYS_HZ		1000
++
++#endif	/* __COBRA7727_H */
+diff -Naur /home/cyb/opt/u-boot-2012.10//makeconfig u-boot-2012.10//makeconfig
+--- /home/cyb/opt/u-boot-2012.10//makeconfig	1970-01-01 08:00:00.000000000 +0800
++++ u-boot-2012.10//makeconfig	2013-02-28 16:53:36.000000000 +0800
+@@ -0,0 +1 @@
++make cobra7727_config
