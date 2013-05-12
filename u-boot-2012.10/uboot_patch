@@ -1,3 +1,15 @@
+diff --git a/.gitignore b/.gitignore
+index d91e91b..4b52377 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -43,6 +43,7 @@
+ /u-boot.dtb
+ /u-boot.sb
+ /u-boot.geany
++/makeconfig
+ 
+ #
+ # Generated files
 diff --git a/arch/sh/config.mk b/arch/sh/config.mk
 index 07ff8b9..d153411 100644
 --- a/arch/sh/config.mk
@@ -196,7 +208,7 @@ index 0000000..6ccd4bb
 +
 +#endif /* _ASM_CPU_SH7727_H_ */
 diff --git a/arch/sh/lib/Makefile b/arch/sh/lib/Makefile
-index 256811a..20ae035 100644
+index 256811a..b3d5c62 100644
 --- a/arch/sh/lib/Makefile
 +++ b/arch/sh/lib/Makefile
 @@ -23,7 +23,18 @@ include $(TOPDIR)/config.mk
@@ -209,7 +221,7 @@ index 256811a..20ae035 100644
 +SOBJS-y	+= ashiftlt.o
 +SOBJS-y	+= lshiftrt.o
 +SOBJS-y	+= ashrsi3.o
-+SOBJS-y += udivsi3_i4i.o
++SOBJS-y	+= udivsi3_i4i.o
 +SOBJS-y	+= movmem.o
 +COBJS-y	+= lshrdi3.o
 +COBJS-y	+= ashldi3.o
@@ -1167,34 +1179,6 @@ index 3872878..1cba451 100644
  
  /*
   * Add in absolutes.
-diff --git a/common/env_flash.c b/common/env_flash.c
-index aa970d4..93a3a8e 100644
---- a/common/env_flash.c
-+++ b/common/env_flash.c
-@@ -55,8 +55,8 @@ env_t *env_ptr = &environment;
- static env_t *flash_addr = (env_t *)CONFIG_ENV_ADDR;
- 
- #else /* ! ENV_IS_EMBEDDED */
--
- env_t *env_ptr = (env_t *)CONFIG_ENV_ADDR;
-+
- static env_t *flash_addr = (env_t *)CONFIG_ENV_ADDR;
- #endif /* ENV_IS_EMBEDDED */
- 
-diff --git a/config.mk b/config.mk
-index 51b4783..547f11b 100644
---- a/config.mk
-+++ b/config.mk
-@@ -186,7 +186,9 @@ endif
- # who are porting old code to latest mainline but not updating $(AR).
- ARFLAGS = $(error update your Makefile to use cmd_link_o_target and not AR)
- RELFLAGS= $(PLATFORM_RELFLAGS)
-+ifdef	DEBUG
- DBGFLAGS= -g # -DDEBUG
-+endif
- OPTFLAGS= -Os #-fomit-frame-pointer
- 
- OBJCFLAGS += --gap-fill=0xff
 diff --git a/drivers/mtd/cfi_flash.c b/drivers/mtd/cfi_flash.c
 index 43140f3..adf0a40 100644
 --- a/drivers/mtd/cfi_flash.c

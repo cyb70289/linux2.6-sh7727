@@ -1,0 +1,99 @@
+1. packages and patches
+- gcc-4.7.2
+  * 100-uclibc-conf.patch
+  * 301-missing-execinfo_h.patch
+  * 302-c99-snprintf.patch
+  * 305-libmudflap-susv3-legacy.patch
+  * 810-arm-softfloat-libgcc.patch
+  * 830-arm_unbreak_armv4t.patch
+  * powerpc-link-with-math-lib.patch.conditional
+- binutils-2.23.1
+  * 120-sh-conf.patch
+  * 300-001_ld_makefile_patch.patch
+  * 300-012_check_ldrunpath_length.patch
+  * 500-sysroot.patch
+- uClibc-0.9.33.2-patch
+  * uClibc-0.9.33.2-define-MSG_CMSG_CLOEXEC.patch
+  * uClibc-0.9.33.2-dup3.patch
+
+2. gcc prerequisites
+- mpc-1.0.1.tar.gz
+- mpfr-3.1.1.tar.bz2
+- gmp-5.1.1.tar.bz2
+
+3. binutils
+AR=ar \
+AS=as \
+../binutils-2.23.1/configure \
+	--prefix=/home/c/sh3-linux-dev \
+	--with-sysroot=/home/c/sh3-linux-dev/sh3-linux-uclibc \
+	--program-prefix=sh3-linux- \
+	--target=sh3-linux-uclibc \
+	--enable-shared \
+	--disable-multilib \
+	--disable-nls
+make
+make install
+
+4. gcc pass1
+AR=ar \
+LDFLAGS="-Wl,-rpath,/home/c/sh3-linux-dev/lib" \
+../gcc-4.7.2/configure \
+	--prefix=/home/c/sh3-linux-dev \
+	--program-prefix=sh3-linux- \
+	--with-sysroot=/home/c/sh3-linux-dev/sh3-linux-uclibc \
+	--target=sh3-linux-uclibc \
+	--without-headers \
+	--with-newlib \
+	--enable-languages=c \
+	--disable-decimal-float \
+	--disable-quadmath \
+	--disable-threads \
+	--disable-libgomp \
+	--disable-libmudflap \
+	--disable-libssp \
+	--disable-nls \
+	--disable-shared \
+	--disable-multilib \
+	--with-mpfr-include=$(pwd)/../gcc-4.7.2/mpfr/src \
+	--with-mpfr-lib=$(pwd)/mpfr/src/.libs
+make all-gcc
+make all-target-libgcc
+make install-gcc
+make install-target-libgcc
+
+5. uClibc
+- install linux kernel header to sh3-linux-uclibc/usr/include/
+- Thread mode must be set to "linux old"
+- FIXME(gcc pass2 won't search usr/lib, usr/include):
+  * sh3-linux-uclibc$ ln -s usr/include include
+  * sh3-linux-uclibc/lib$ for f in ../usr/lib/*; do ln -s $f; done
+
+6. gcc pass2
+AR="ar" \
+LDFLAGS="-Wl,-rpath,/home/c/sh3-linux-dev/lib" \
+../gcc-4.7.2/configure \
+	--prefix=/home/c/sh3-linux-dev \
+	--program-prefix=sh3-linux- \
+	--with-sysroot=/home/c/sh3-linux-dev/sh3-linux-uclibc \
+	--target=sh3-linux-uclibc \
+	--enable-languages=c,c++ \
+	--disable-nls \
+	--enable-shared \
+	--enable-__cxa_atexit \
+	--enable-c99 \
+	--enable-long-long \
+	--enable-threads=posix \
+	--disable-libgomp \
+	--disable-multilib \
+	--disable-libquadmath \
+	--disable-libssp \
+	--with-mpfr-include=$(pwd)/../gcc-4.7.2/mpfr/src \
+	--with-mpfr-lib=$(pwd)/mpfr/src/.libs
+make
+make install
+
+7. clear redundant libs & include files
+- FIXME:
+  * sh3-linux-uclibc$ rm include
+  * sh3-linux-uclibc/lib$ for f in ../usr/lib/*; do rm `basename $f`; done

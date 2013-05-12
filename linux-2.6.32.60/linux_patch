@@ -1,3 +1,18 @@
+diff --git a/.gitignore b/.gitignore
+index 946c7ec..38b16e1 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -41,6 +41,10 @@ Module.markers
+ Module.symvers
+ !.gitignore
+ !.mailmap
++makemenu
++makeuimage
++makemodule
++makeinclude
+ 
+ #
+ # Generated include files
 diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
 index 88cdeb9..9a797ac 100644
 --- a/arch/sh/Kconfig
@@ -92,10 +107,10 @@ index 0000000..64c2be4
 +}
 diff --git a/arch/sh/boards/mach-cobra7727/setup.c b/arch/sh/boards/mach-cobra7727/setup.c
 new file mode 100644
-index 0000000..ea999f3
+index 0000000..1120028
 --- /dev/null
 +++ b/arch/sh/boards/mach-cobra7727/setup.c
-@@ -0,0 +1,199 @@
+@@ -0,0 +1,209 @@
 +/*
 + * linux/arch/sh/boards/mach-cobra7727/setup.c
 + *
@@ -215,13 +230,13 @@ index 0000000..ea999f3
 +	KEY(0, 2, COBRA_KEY_UP),
 +	KEY(0, 3, COBRA_KEY_LEFT),
 +	KEY(0, 4, COBRA_KEY_CANCEL),
-+	KEY(0, 5, COBRA_KEY_BACKLIGHT),
-+	KEY(1, 0, COBRA_KEY_HOME),
-+	KEY(1, 1, COBRA_KEY_RIGHT),
-+	KEY(1, 2, COBRA_KEY_DOWN),
-+	KEY(1, 3, COBRA_KEY_MENU),
-+	KEY(1, 4, KEY_F11),	/* N/A */
-+	KEY(1, 5, KEY_F12),	/* N/A */
++	KEY(0, 5, KEY_F11),
++	KEY(1, 0, COBRA_KEY_BACKLIGHT),
++	KEY(1, 1, COBRA_KEY_HOME),
++	KEY(1, 2, COBRA_KEY_RIGHT),
++	KEY(1, 3, COBRA_KEY_DOWN),
++	KEY(1, 4, COBRA_KEY_MENU),
++	KEY(1, 5, KEY_F12),
 +};
 +
 +static const struct matrix_keymap_data keypad_keymap_data = {
@@ -258,12 +273,22 @@ index 0000000..ea999f3
 +};
 +
 +/*
++ * Beeper
++ */
++static struct platform_device beeper_device = {
++	.name		= "cobra-beeper",
++	.id		= GPIO_PTJ1,
++	.num_resources	= 0,
++};
++
++/*
 + * Devices
 + */
 +static struct platform_device *cobra7727_devices[] __initdata = {
 +	&nor_flash_device,
 +	&uc1161_device,
 +	&keypad_device,
++	&beeper_device,
 +};
 +
 +static int __init devices_setup(void)
@@ -295,6 +320,858 @@ index 0000000..ea999f3
 +	.mv_setup		= cobra7727_setup,
 +	.mv_init_irq		= init_cobra7727_IRQ,
 +};
+diff --git a/arch/sh/configs/cobra7727_defconfig b/arch/sh/configs/cobra7727_defconfig
+new file mode 100644
+index 0000000..a091278
+--- /dev/null
++++ b/arch/sh/configs/cobra7727_defconfig
+@@ -0,0 +1,846 @@
++#
++# Automatically generated make config: don't edit
++# Linux kernel version: 2.6.32.60
++# Fri May  3 12:22:44 2013
++#
++CONFIG_SUPERH=y
++CONFIG_SUPERH32=y
++# CONFIG_SUPERH64 is not set
++CONFIG_ARCH_DEFCONFIG="arch/sh/configs/shx3_defconfig"
++CONFIG_RWSEM_GENERIC_SPINLOCK=y
++CONFIG_GENERIC_BUG=y
++CONFIG_GENERIC_FIND_NEXT_BIT=y
++CONFIG_GENERIC_HWEIGHT=y
++CONFIG_GENERIC_HARDIRQS=y
++CONFIG_GENERIC_HARDIRQS_NO__DO_IRQ=y
++CONFIG_GENERIC_IRQ_PROBE=y
++CONFIG_IRQ_PER_CPU=y
++CONFIG_GENERIC_GPIO=y
++CONFIG_GENERIC_TIME=y
++CONFIG_GENERIC_CLOCKEVENTS=y
++# CONFIG_ARCH_SUSPEND_POSSIBLE is not set
++CONFIG_ARCH_HIBERNATION_POSSIBLE=y
++CONFIG_SYS_SUPPORTS_TMU=y
++CONFIG_STACKTRACE_SUPPORT=y
++CONFIG_LOCKDEP_SUPPORT=y
++CONFIG_HAVE_LATENCYTOP_SUPPORT=y
++# CONFIG_ARCH_HAS_ILOG2_U32 is not set
++# CONFIG_ARCH_HAS_ILOG2_U64 is not set
++CONFIG_ARCH_NO_VIRT_TO_BUS=y
++CONFIG_ARCH_HAS_DEFAULT_IDLE=y
++CONFIG_ARCH_HAS_CPU_IDLE_WAIT=y
++CONFIG_DEFCONFIG_LIST="/lib/modules/$UNAME_RELEASE/.config"
++CONFIG_CONSTRUCTORS=y
++
++#
++# General setup
++#
++# CONFIG_EXPERIMENTAL is not set
++CONFIG_BROKEN_ON_SMP=y
++CONFIG_LOCK_KERNEL=y
++CONFIG_INIT_ENV_ARG_LIMIT=32
++CONFIG_LOCALVERSION=""
++# CONFIG_LOCALVERSION_AUTO is not set
++CONFIG_HAVE_KERNEL_GZIP=y
++CONFIG_HAVE_KERNEL_BZIP2=y
++CONFIG_HAVE_KERNEL_LZMA=y
++CONFIG_KERNEL_GZIP=y
++# CONFIG_KERNEL_BZIP2 is not set
++# CONFIG_KERNEL_LZMA is not set
++# CONFIG_SWAP is not set
++CONFIG_SYSVIPC=y
++CONFIG_SYSVIPC_SYSCTL=y
++# CONFIG_BSD_PROCESS_ACCT is not set
++# CONFIG_TASKSTATS is not set
++# CONFIG_AUDIT is not set
++
++#
++# RCU Subsystem
++#
++CONFIG_TREE_RCU=y
++# CONFIG_TREE_PREEMPT_RCU is not set
++# CONFIG_RCU_TRACE is not set
++CONFIG_RCU_FANOUT=32
++# CONFIG_RCU_FANOUT_EXACT is not set
++# CONFIG_TREE_RCU_TRACE is not set
++# CONFIG_IKCONFIG is not set
++CONFIG_LOG_BUF_SHIFT=12
++# CONFIG_CGROUPS is not set
++# CONFIG_SYSFS_DEPRECATED_V2 is not set
++# CONFIG_RELAY is not set
++# CONFIG_NAMESPACES is not set
++# CONFIG_BLK_DEV_INITRD is not set
++# CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
++CONFIG_SYSCTL=y
++CONFIG_ANON_INODES=y
++CONFIG_EMBEDDED=y
++CONFIG_UID16=y
++CONFIG_SYSCTL_SYSCALL=y
++CONFIG_KALLSYMS=y
++# CONFIG_KALLSYMS_EXTRA_PASS is not set
++CONFIG_HOTPLUG=y
++CONFIG_PRINTK=y
++CONFIG_BUG=y
++# CONFIG_ELF_CORE is not set
++# CONFIG_BASE_FULL is not set
++CONFIG_FUTEX=y
++CONFIG_EPOLL=y
++CONFIG_SIGNALFD=y
++CONFIG_TIMERFD=y
++CONFIG_EVENTFD=y
++CONFIG_SHMEM=y
++CONFIG_AIO=y
++CONFIG_HAVE_PERF_EVENTS=y
++
++#
++# Kernel Performance Events And Counters
++#
++# CONFIG_PERF_EVENTS is not set
++# CONFIG_PERF_COUNTERS is not set
++# CONFIG_VM_EVENT_COUNTERS is not set
++# CONFIG_SLUB_DEBUG is not set
++# CONFIG_COMPAT_BRK is not set
++# CONFIG_SLAB is not set
++CONFIG_SLUB=y
++# CONFIG_SLOB is not set
++# CONFIG_PROFILING is not set
++CONFIG_HAVE_OPROFILE=y
++# CONFIG_KPROBES is not set
++CONFIG_HAVE_IOREMAP_PROT=y
++CONFIG_HAVE_KPROBES=y
++CONFIG_HAVE_KRETPROBES=y
++CONFIG_HAVE_ARCH_TRACEHOOK=y
++CONFIG_HAVE_CLK=y
++CONFIG_HAVE_DMA_API_DEBUG=y
++
++#
++# GCOV-based kernel profiling
++#
++# CONFIG_SLOW_WORK is not set
++CONFIG_HAVE_GENERIC_DMA_COHERENT=y
++CONFIG_RT_MUTEXES=y
++CONFIG_BASE_SMALL=1
++CONFIG_MODULES=y
++# CONFIG_MODULE_FORCE_LOAD is not set
++CONFIG_MODULE_UNLOAD=y
++# CONFIG_MODVERSIONS is not set
++# CONFIG_MODULE_SRCVERSION_ALL is not set
++CONFIG_BLOCK=y
++# CONFIG_LBDAF is not set
++# CONFIG_BLK_DEV_BSG is not set
++# CONFIG_BLK_DEV_INTEGRITY is not set
++
++#
++# IO Schedulers
++#
++CONFIG_IOSCHED_NOOP=y
++# CONFIG_IOSCHED_AS is not set
++# CONFIG_IOSCHED_DEADLINE is not set
++# CONFIG_IOSCHED_CFQ is not set
++# CONFIG_DEFAULT_AS is not set
++# CONFIG_DEFAULT_DEADLINE is not set
++# CONFIG_DEFAULT_CFQ is not set
++CONFIG_DEFAULT_NOOP=y
++CONFIG_DEFAULT_IOSCHED="noop"
++# CONFIG_FREEZER is not set
++
++#
++# System type
++#
++CONFIG_CPU_SH3=y
++# CONFIG_CPU_SUBTYPE_SH7619 is not set
++# CONFIG_CPU_SUBTYPE_SH7201 is not set
++# CONFIG_CPU_SUBTYPE_SH7203 is not set
++# CONFIG_CPU_SUBTYPE_SH7206 is not set
++# CONFIG_CPU_SUBTYPE_SH7263 is not set
++# CONFIG_CPU_SUBTYPE_MXG is not set
++# CONFIG_CPU_SUBTYPE_SH7705 is not set
++# CONFIG_CPU_SUBTYPE_SH7706 is not set
++# CONFIG_CPU_SUBTYPE_SH7707 is not set
++# CONFIG_CPU_SUBTYPE_SH7708 is not set
++# CONFIG_CPU_SUBTYPE_SH7709 is not set
++# CONFIG_CPU_SUBTYPE_SH7710 is not set
++# CONFIG_CPU_SUBTYPE_SH7712 is not set
++# CONFIG_CPU_SUBTYPE_SH7720 is not set
++# CONFIG_CPU_SUBTYPE_SH7721 is not set
++CONFIG_CPU_SUBTYPE_SH7727=y
++# CONFIG_CPU_SUBTYPE_SH7750 is not set
++# CONFIG_CPU_SUBTYPE_SH7091 is not set
++# CONFIG_CPU_SUBTYPE_SH7750R is not set
++# CONFIG_CPU_SUBTYPE_SH7750S is not set
++# CONFIG_CPU_SUBTYPE_SH7751 is not set
++# CONFIG_CPU_SUBTYPE_SH7751R is not set
++# CONFIG_CPU_SUBTYPE_SH7760 is not set
++# CONFIG_CPU_SUBTYPE_SH4_202 is not set
++# CONFIG_CPU_SUBTYPE_SH7723 is not set
++# CONFIG_CPU_SUBTYPE_SH7724 is not set
++# CONFIG_CPU_SUBTYPE_SH7757 is not set
++# CONFIG_CPU_SUBTYPE_SH7763 is not set
++# CONFIG_CPU_SUBTYPE_SH7770 is not set
++# CONFIG_CPU_SUBTYPE_SH7780 is not set
++# CONFIG_CPU_SUBTYPE_SH7785 is not set
++# CONFIG_CPU_SUBTYPE_SH7786 is not set
++# CONFIG_CPU_SUBTYPE_SHX3 is not set
++# CONFIG_CPU_SUBTYPE_SH7343 is not set
++# CONFIG_CPU_SUBTYPE_SH7722 is not set
++# CONFIG_CPU_SUBTYPE_SH7366 is not set
++
++#
++# Memory management options
++#
++CONFIG_QUICKLIST=y
++CONFIG_MMU=y
++CONFIG_PAGE_OFFSET=0x80000000
++CONFIG_FORCE_MAX_ZONEORDER=11
++CONFIG_MEMORY_START=0x0c000000
++CONFIG_MEMORY_SIZE=0x01000000
++CONFIG_29BIT=y
++CONFIG_VSYSCALL=y
++CONFIG_ARCH_FLATMEM_ENABLE=y
++CONFIG_ARCH_SPARSEMEM_ENABLE=y
++CONFIG_ARCH_SPARSEMEM_DEFAULT=y
++CONFIG_MAX_ACTIVE_REGIONS=1
++CONFIG_ARCH_POPULATES_NODE_MAP=y
++CONFIG_ARCH_SELECT_MEMORY_MODEL=y
++CONFIG_PAGE_SIZE_4KB=y
++# CONFIG_PAGE_SIZE_8KB is not set
++# CONFIG_PAGE_SIZE_16KB is not set
++# CONFIG_PAGE_SIZE_64KB is not set
++CONFIG_SELECT_MEMORY_MODEL=y
++CONFIG_FLATMEM_MANUAL=y
++# CONFIG_DISCONTIGMEM_MANUAL is not set
++# CONFIG_SPARSEMEM_MANUAL is not set
++CONFIG_FLATMEM=y
++CONFIG_FLAT_NODE_MEM_MAP=y
++CONFIG_SPARSEMEM_STATIC=y
++CONFIG_PAGEFLAGS_EXTENDED=y
++CONFIG_SPLIT_PTLOCK_CPUS=4
++# CONFIG_PHYS_ADDR_T_64BIT is not set
++CONFIG_ZONE_DMA_FLAG=0
++CONFIG_NR_QUICK=2
++CONFIG_HAVE_MLOCK=y
++CONFIG_HAVE_MLOCKED_PAGE_BIT=y
++# CONFIG_KSM is not set
++CONFIG_DEFAULT_MMAP_MIN_ADDR=4096
++
++#
++# Cache configuration
++#
++CONFIG_CACHE_WRITEBACK=y
++# CONFIG_CACHE_WRITETHROUGH is not set
++# CONFIG_CACHE_OFF is not set
++
++#
++# Processor features
++#
++CONFIG_CPU_LITTLE_ENDIAN=y
++# CONFIG_CPU_BIG_ENDIAN is not set
++# CONFIG_SH_DSP is not set
++# CONFIG_SH_ADC is not set
++CONFIG_CPU_HAS_INTEVT=y
++CONFIG_CPU_HAS_SR_RB=y
++CONFIG_CPU_HAS_DSP=y
++
++#
++# Board support
++#
++CONFIG_SH_COBRA7727=y
++
++#
++# Timer and clock configuration
++#
++CONFIG_SH_TIMER_TMU=y
++CONFIG_SH_PCLK_FREQ=32000000
++CONFIG_SH_CLK_CPG=y
++CONFIG_SH_CLK_CPG_LEGACY=y
++# CONFIG_NO_HZ is not set
++# CONFIG_HIGH_RES_TIMERS is not set
++CONFIG_GENERIC_CLOCKEVENTS_BUILD=y
++
++#
++# CPU Frequency scaling
++#
++# CONFIG_CPU_FREQ is not set
++
++#
++# DMA support
++#
++CONFIG_SH_DMA=y
++# CONFIG_SH_DMA_API is not set
++CONFIG_NR_ONCHIP_DMA_CHANNELS=6
++# CONFIG_NR_DMA_CHANNELS_BOOL is not set
++
++#
++# Companion Chips
++#
++
++#
++# Additional SuperH Device Drivers
++#
++# CONFIG_HEARTBEAT is not set
++# CONFIG_PUSH_SWITCH is not set
++
++#
++# Kernel features
++#
++# CONFIG_HZ_100 is not set
++CONFIG_HZ_250=y
++# CONFIG_HZ_300 is not set
++# CONFIG_HZ_1000 is not set
++CONFIG_HZ=250
++# CONFIG_SCHED_HRTICK is not set
++# CONFIG_SECCOMP is not set
++# CONFIG_PREEMPT_NONE is not set
++# CONFIG_PREEMPT_VOLUNTARY is not set
++CONFIG_PREEMPT=y
++CONFIG_GUSA=y
++# CONFIG_GUSA_RB is not set
++
++#
++# Boot options
++#
++CONFIG_ZERO_PAGE_OFFSET=0x00001000
++CONFIG_BOOT_LINK_OFFSET=0x00800000
++CONFIG_ENTRY_OFFSET=0x00001000
++# CONFIG_CMDLINE_OVERWRITE is not set
++# CONFIG_CMDLINE_EXTEND is not set
++
++#
++# Bus options
++#
++# CONFIG_ARCH_SUPPORTS_MSI is not set
++# CONFIG_PCCARD is not set
++
++#
++# Executable file formats
++#
++CONFIG_BINFMT_ELF=y
++# CONFIG_HAVE_AOUT is not set
++# CONFIG_BINFMT_MISC is not set
++CONFIG_NET=y
++
++#
++# Networking options
++#
++# CONFIG_PACKET is not set
++# CONFIG_UNIX is not set
++# CONFIG_NET_KEY is not set
++# CONFIG_INET is not set
++# CONFIG_NETWORK_SECMARK is not set
++# CONFIG_NETFILTER is not set
++# CONFIG_ATM is not set
++# CONFIG_BRIDGE is not set
++# CONFIG_VLAN_8021Q is not set
++# CONFIG_DECNET is not set
++# CONFIG_LLC2 is not set
++# CONFIG_IPX is not set
++# CONFIG_ATALK is not set
++# CONFIG_PHONET is not set
++# CONFIG_NET_SCHED is not set
++# CONFIG_DCB is not set
++
++#
++# Network testing
++#
++# CONFIG_NET_PKTGEN is not set
++# CONFIG_HAMRADIO is not set
++# CONFIG_CAN is not set
++# CONFIG_IRDA is not set
++# CONFIG_BT is not set
++# CONFIG_WIRELESS is not set
++# CONFIG_WIMAX is not set
++# CONFIG_RFKILL is not set
++
++#
++# Device Drivers
++#
++
++#
++# Generic Driver Options
++#
++CONFIG_UEVENT_HELPER_PATH="/sbin/mdev"
++# CONFIG_DEVTMPFS is not set
++CONFIG_STANDALONE=y
++CONFIG_PREVENT_FIRMWARE_BUILD=y
++# CONFIG_FW_LOADER is not set
++# CONFIG_SYS_HYPERVISOR is not set
++# CONFIG_CONNECTOR is not set
++CONFIG_MTD=y
++# CONFIG_MTD_DEBUG is not set
++# CONFIG_MTD_TESTS is not set
++# CONFIG_MTD_CONCAT is not set
++CONFIG_MTD_PARTITIONS=y
++# CONFIG_MTD_REDBOOT_PARTS is not set
++# CONFIG_MTD_CMDLINE_PARTS is not set
++# CONFIG_MTD_AR7_PARTS is not set
++
++#
++# User Modules And Translation Layers
++#
++CONFIG_MTD_CHAR=y
++CONFIG_MTD_BLKDEVS=y
++CONFIG_MTD_BLOCK=y
++# CONFIG_FTL is not set
++# CONFIG_NFTL is not set
++# CONFIG_INFTL is not set
++# CONFIG_RFD_FTL is not set
++# CONFIG_SSFDC is not set
++# CONFIG_MTD_OOPS is not set
++
++#
++# RAM/ROM/Flash chip drivers
++#
++CONFIG_MTD_CFI=y
++# CONFIG_MTD_JEDECPROBE is not set
++CONFIG_MTD_GEN_PROBE=y
++# CONFIG_MTD_CFI_ADV_OPTIONS is not set
++CONFIG_MTD_MAP_BANK_WIDTH_1=y
++CONFIG_MTD_MAP_BANK_WIDTH_2=y
++CONFIG_MTD_MAP_BANK_WIDTH_4=y
++# CONFIG_MTD_MAP_BANK_WIDTH_8 is not set
++# CONFIG_MTD_MAP_BANK_WIDTH_16 is not set
++# CONFIG_MTD_MAP_BANK_WIDTH_32 is not set
++CONFIG_MTD_CFI_I1=y
++CONFIG_MTD_CFI_I2=y
++# CONFIG_MTD_CFI_I4 is not set
++# CONFIG_MTD_CFI_I8 is not set
++# CONFIG_MTD_CFI_INTELEXT is not set
++CONFIG_MTD_CFI_AMDSTD=y
++# CONFIG_MTD_CFI_STAA is not set
++CONFIG_MTD_CFI_UTIL=y
++# CONFIG_MTD_RAM is not set
++# CONFIG_MTD_ROM is not set
++# CONFIG_MTD_ABSENT is not set
++
++#
++# Mapping drivers for chip access
++#
++# CONFIG_MTD_COMPLEX_MAPPINGS is not set
++CONFIG_MTD_PHYSMAP=y
++# CONFIG_MTD_PHYSMAP_COMPAT is not set
++# CONFIG_MTD_PLATRAM is not set
++
++#
++# Self-contained MTD device drivers
++#
++# CONFIG_MTD_SLRAM is not set
++# CONFIG_MTD_PHRAM is not set
++# CONFIG_MTD_MTDRAM is not set
++# CONFIG_MTD_BLOCK2MTD is not set
++
++#
++# Disk-On-Chip Device Drivers
++#
++# CONFIG_MTD_DOC2000 is not set
++# CONFIG_MTD_DOC2001 is not set
++# CONFIG_MTD_DOC2001PLUS is not set
++# CONFIG_MTD_NAND is not set
++# CONFIG_MTD_ONENAND is not set
++
++#
++# LPDDR flash memory drivers
++#
++# CONFIG_MTD_LPDDR is not set
++
++#
++# UBI - Unsorted block images
++#
++# CONFIG_MTD_UBI is not set
++# CONFIG_PARPORT is not set
++CONFIG_BLK_DEV=y
++# CONFIG_BLK_DEV_COW_COMMON is not set
++# CONFIG_BLK_DEV_LOOP is not set
++# CONFIG_BLK_DEV_NBD is not set
++# CONFIG_BLK_DEV_RAM is not set
++# CONFIG_CDROM_PKTCDVD is not set
++# CONFIG_ATA_OVER_ETH is not set
++# CONFIG_BLK_DEV_HD is not set
++# CONFIG_MISC_DEVICES is not set
++CONFIG_HAVE_IDE=y
++# CONFIG_IDE is not set
++
++#
++# SCSI device support
++#
++# CONFIG_RAID_ATTRS is not set
++# CONFIG_SCSI is not set
++# CONFIG_SCSI_DMA is not set
++# CONFIG_SCSI_NETLINK is not set
++# CONFIG_ATA is not set
++# CONFIG_MD is not set
++# CONFIG_NETDEVICES is not set
++# CONFIG_ISDN is not set
++# CONFIG_PHONE is not set
++
++#
++# Input device support
++#
++CONFIG_INPUT=y
++# CONFIG_INPUT_FF_MEMLESS is not set
++# CONFIG_INPUT_POLLDEV is not set
++
++#
++# Userland interfaces
++#
++# CONFIG_INPUT_MOUSEDEV is not set
++# CONFIG_INPUT_JOYDEV is not set
++CONFIG_INPUT_EVDEV=y
++CONFIG_INPUT_EVBUG=m
++
++#
++# Input Device Drivers
++#
++CONFIG_INPUT_KEYBOARD=y
++# CONFIG_KEYBOARD_ATKBD is not set
++# CONFIG_KEYBOARD_LKKBD is not set
++# CONFIG_KEYBOARD_GPIO is not set
++# CONFIG_KEYBOARD_MATRIX is not set
++CONFIG_KEYBOARD_COBRA7727=m
++# CONFIG_KEYBOARD_NEWTON is not set
++# CONFIG_KEYBOARD_OPENCORES is not set
++# CONFIG_KEYBOARD_STOWAWAY is not set
++# CONFIG_KEYBOARD_SUNKBD is not set
++# CONFIG_KEYBOARD_SH_KEYSC is not set
++# CONFIG_KEYBOARD_XTKBD is not set
++# CONFIG_INPUT_MOUSE is not set
++# CONFIG_INPUT_JOYSTICK is not set
++# CONFIG_INPUT_TABLET is not set
++# CONFIG_INPUT_TOUCHSCREEN is not set
++CONFIG_INPUT_MISC=y
++# CONFIG_INPUT_UINPUT is not set
++# CONFIG_INPUT_GPIO_ROTARY_ENCODER is not set
++CONFIG_INPUT_COBRA7727_BEEPER=m
++
++#
++# Hardware I/O ports
++#
++# CONFIG_SERIO is not set
++# CONFIG_GAMEPORT is not set
++
++#
++# Character devices
++#
++# CONFIG_VT is not set
++# CONFIG_DEVKMEM is not set
++# CONFIG_SERIAL_NONSTANDARD is not set
++
++#
++# Serial drivers
++#
++# CONFIG_SERIAL_8250 is not set
++
++#
++# Non-8250 serial port support
++#
++CONFIG_SERIAL_SH_SCI=y
++CONFIG_SERIAL_SH_SCI_NR_UARTS=2
++CONFIG_SERIAL_SH_SCI_CONSOLE=y
++CONFIG_SERIAL_CORE=y
++CONFIG_SERIAL_CORE_CONSOLE=y
++CONFIG_UNIX98_PTYS=y
++# CONFIG_DEVPTS_MULTIPLE_INSTANCES is not set
++# CONFIG_LEGACY_PTYS is not set
++# CONFIG_IPMI_HANDLER is not set
++# CONFIG_HW_RANDOM is not set
++# CONFIG_R3964 is not set
++# CONFIG_RAW_DRIVER is not set
++# CONFIG_I2C is not set
++# CONFIG_SPI is not set
++
++#
++# PPS support
++#
++CONFIG_ARCH_REQUIRE_GPIOLIB=y
++CONFIG_GPIOLIB=y
++
++#
++# Memory mapped GPIO expanders:
++#
++
++#
++# I2C GPIO expanders:
++#
++
++#
++# PCI GPIO expanders:
++#
++
++#
++# SPI GPIO expanders:
++#
++
++#
++# AC97 GPIO expanders:
++#
++# CONFIG_W1 is not set
++# CONFIG_POWER_SUPPLY is not set
++# CONFIG_HWMON is not set
++# CONFIG_THERMAL is not set
++# CONFIG_WATCHDOG is not set
++CONFIG_SSB_POSSIBLE=y
++
++#
++# Sonics Silicon Backplane
++#
++# CONFIG_SSB is not set
++
++#
++# Multifunction device drivers
++#
++# CONFIG_MFD_CORE is not set
++# CONFIG_MFD_SM501 is not set
++# CONFIG_HTC_PASIC3 is not set
++# CONFIG_MFD_TMIO is not set
++# CONFIG_REGULATOR is not set
++# CONFIG_MEDIA_SUPPORT is not set
++
++#
++# Graphics support
++#
++# CONFIG_VGASTATE is not set
++# CONFIG_VIDEO_OUTPUT_CONTROL is not set
++CONFIG_FB=y
++# CONFIG_FIRMWARE_EDID is not set
++# CONFIG_FB_DDC is not set
++# CONFIG_FB_BOOT_VESA_SUPPORT is not set
++# CONFIG_FB_CFB_FILLRECT is not set
++# CONFIG_FB_CFB_COPYAREA is not set
++# CONFIG_FB_CFB_IMAGEBLIT is not set
++# CONFIG_FB_CFB_REV_PIXELS_IN_BYTE is not set
++CONFIG_FB_SYS_FILLRECT=y
++CONFIG_FB_SYS_COPYAREA=y
++CONFIG_FB_SYS_IMAGEBLIT=y
++# CONFIG_FB_FOREIGN_ENDIAN is not set
++CONFIG_FB_SYS_FOPS=y
++# CONFIG_FB_SVGALIB is not set
++# CONFIG_FB_MACMODES is not set
++CONFIG_FB_BACKLIGHT=y
++# CONFIG_FB_MODE_HELPERS is not set
++# CONFIG_FB_TILEBLITTING is not set
++
++#
++# Frame buffer hardware drivers
++#
++# CONFIG_FB_S1D13XXX is not set
++# CONFIG_FB_SH_MOBILE_LCDC is not set
++# CONFIG_FB_VIRTUAL is not set
++# CONFIG_FB_METRONOME is not set
++# CONFIG_FB_MB862XX is not set
++# CONFIG_FB_BROADSHEET is not set
++CONFIG_FB_UC1161=m
++CONFIG_BACKLIGHT_LCD_SUPPORT=y
++CONFIG_LCD_CLASS_DEVICE=y
++# CONFIG_LCD_ILI9320 is not set
++# CONFIG_LCD_PLATFORM is not set
++CONFIG_BACKLIGHT_CLASS_DEVICE=y
++# CONFIG_BACKLIGHT_GENERIC is not set
++
++#
++# Display device support
++#
++# CONFIG_DISPLAY_SUPPORT is not set
++# CONFIG_LOGO is not set
++# CONFIG_SOUND is not set
++# CONFIG_HID_SUPPORT is not set
++# CONFIG_USB_SUPPORT is not set
++# CONFIG_MMC is not set
++# CONFIG_MEMSTICK is not set
++# CONFIG_NEW_LEDS is not set
++# CONFIG_ACCESSIBILITY is not set
++CONFIG_RTC_LIB=y
++# CONFIG_RTC_CLASS is not set
++# CONFIG_DMADEVICES is not set
++# CONFIG_AUXDISPLAY is not set
++# CONFIG_UIO is not set
++
++#
++# TI VLYNQ
++#
++# CONFIG_STAGING is not set
++
++#
++# File systems
++#
++# CONFIG_EXT2_FS is not set
++# CONFIG_EXT3_FS is not set
++# CONFIG_EXT4_FS is not set
++# CONFIG_REISERFS_FS is not set
++# CONFIG_JFS_FS is not set
++# CONFIG_FS_POSIX_ACL is not set
++# CONFIG_XFS_FS is not set
++# CONFIG_OCFS2_FS is not set
++CONFIG_FILE_LOCKING=y
++# CONFIG_FSNOTIFY is not set
++# CONFIG_DNOTIFY is not set
++# CONFIG_INOTIFY is not set
++# CONFIG_INOTIFY_USER is not set
++# CONFIG_QUOTA is not set
++# CONFIG_AUTOFS_FS is not set
++# CONFIG_AUTOFS4_FS is not set
++# CONFIG_FUSE_FS is not set
++
++#
++# Caches
++#
++
++#
++# CD-ROM/DVD Filesystems
++#
++# CONFIG_ISO9660_FS is not set
++# CONFIG_UDF_FS is not set
++
++#
++# DOS/FAT/NT Filesystems
++#
++CONFIG_FAT_FS=y
++CONFIG_MSDOS_FS=y
++CONFIG_VFAT_FS=y
++CONFIG_FAT_DEFAULT_CODEPAGE=437
++CONFIG_FAT_DEFAULT_IOCHARSET="iso8859-1"
++# CONFIG_NTFS_FS is not set
++
++#
++# Pseudo filesystems
++#
++CONFIG_PROC_FS=y
++# CONFIG_PROC_KCORE is not set
++CONFIG_PROC_SYSCTL=y
++CONFIG_PROC_PAGE_MONITOR=y
++CONFIG_SYSFS=y
++CONFIG_TMPFS=y
++# CONFIG_TMPFS_POSIX_ACL is not set
++# CONFIG_HUGETLB_PAGE is not set
++# CONFIG_CONFIGFS_FS is not set
++CONFIG_MISC_FILESYSTEMS=y
++# CONFIG_HFSPLUS_FS is not set
++CONFIG_JFFS2_FS=y
++CONFIG_JFFS2_FS_DEBUG=0
++CONFIG_JFFS2_FS_WRITEBUFFER=y
++# CONFIG_JFFS2_FS_WBUF_VERIFY is not set
++# CONFIG_JFFS2_COMPRESSION_OPTIONS is not set
++CONFIG_JFFS2_ZLIB=y
++# CONFIG_JFFS2_LZO is not set
++CONFIG_JFFS2_RTIME=y
++# CONFIG_JFFS2_RUBIN is not set
++# CONFIG_CRAMFS is not set
++# CONFIG_SQUASHFS is not set
++# CONFIG_VXFS_FS is not set
++# CONFIG_MINIX_FS is not set
++# CONFIG_OMFS_FS is not set
++# CONFIG_HPFS_FS is not set
++# CONFIG_QNX4FS_FS is not set
++# CONFIG_ROMFS_FS is not set
++# CONFIG_SYSV_FS is not set
++# CONFIG_UFS_FS is not set
++# CONFIG_NETWORK_FILESYSTEMS is not set
++
++#
++# Partition Types
++#
++# CONFIG_PARTITION_ADVANCED is not set
++CONFIG_MSDOS_PARTITION=y
++CONFIG_NLS=y
++CONFIG_NLS_DEFAULT="iso8859-1"
++CONFIG_NLS_CODEPAGE_437=y
++# CONFIG_NLS_CODEPAGE_737 is not set
++# CONFIG_NLS_CODEPAGE_775 is not set
++# CONFIG_NLS_CODEPAGE_850 is not set
++# CONFIG_NLS_CODEPAGE_852 is not set
++# CONFIG_NLS_CODEPAGE_855 is not set
++# CONFIG_NLS_CODEPAGE_857 is not set
++# CONFIG_NLS_CODEPAGE_860 is not set
++# CONFIG_NLS_CODEPAGE_861 is not set
++# CONFIG_NLS_CODEPAGE_862 is not set
++# CONFIG_NLS_CODEPAGE_863 is not set
++# CONFIG_NLS_CODEPAGE_864 is not set
++# CONFIG_NLS_CODEPAGE_865 is not set
++# CONFIG_NLS_CODEPAGE_866 is not set
++# CONFIG_NLS_CODEPAGE_869 is not set
++# CONFIG_NLS_CODEPAGE_936 is not set
++# CONFIG_NLS_CODEPAGE_950 is not set
++# CONFIG_NLS_CODEPAGE_932 is not set
++# CONFIG_NLS_CODEPAGE_949 is not set
++# CONFIG_NLS_CODEPAGE_874 is not set
++# CONFIG_NLS_ISO8859_8 is not set
++# CONFIG_NLS_CODEPAGE_1250 is not set
++# CONFIG_NLS_CODEPAGE_1251 is not set
++# CONFIG_NLS_ASCII is not set
++# CONFIG_NLS_ISO8859_1 is not set
++# CONFIG_NLS_ISO8859_2 is not set
++# CONFIG_NLS_ISO8859_3 is not set
++# CONFIG_NLS_ISO8859_4 is not set
++# CONFIG_NLS_ISO8859_5 is not set
++# CONFIG_NLS_ISO8859_6 is not set
++# CONFIG_NLS_ISO8859_7 is not set
++# CONFIG_NLS_ISO8859_9 is not set
++# CONFIG_NLS_ISO8859_13 is not set
++# CONFIG_NLS_ISO8859_14 is not set
++# CONFIG_NLS_ISO8859_15 is not set
++# CONFIG_NLS_KOI8_R is not set
++# CONFIG_NLS_KOI8_U is not set
++# CONFIG_NLS_UTF8 is not set
++
++#
++# Kernel hacking
++#
++CONFIG_TRACE_IRQFLAGS_SUPPORT=y
++# CONFIG_PRINTK_TIME is not set
++# CONFIG_ENABLE_WARN_DEPRECATED is not set
++# CONFIG_ENABLE_MUST_CHECK is not set
++CONFIG_FRAME_WARN=1024
++# CONFIG_MAGIC_SYSRQ is not set
++# CONFIG_STRIP_ASM_SYMS is not set
++# CONFIG_UNUSED_SYMBOLS is not set
++# CONFIG_DEBUG_FS is not set
++# CONFIG_HEADERS_CHECK is not set
++# CONFIG_DEBUG_KERNEL is not set
++# CONFIG_DEBUG_BUGVERBOSE is not set
++# CONFIG_DEBUG_MEMORY_INIT is not set
++# CONFIG_RCU_CPU_STALL_DETECTOR is not set
++# CONFIG_LATENCYTOP is not set
++# CONFIG_SYSCTL_SYSCALL_CHECK is not set
++CONFIG_HAVE_FUNCTION_TRACER=y
++CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
++CONFIG_HAVE_FUNCTION_TRACE_MCOUNT_TEST=y
++CONFIG_HAVE_DYNAMIC_FTRACE=y
++CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
++CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
++CONFIG_TRACING_SUPPORT=y
++# CONFIG_FTRACE is not set
++# CONFIG_DMA_API_DEBUG is not set
++# CONFIG_SAMPLES is not set
++CONFIG_HAVE_ARCH_KGDB=y
++# CONFIG_SH_STANDARD_BIOS is not set
++# CONFIG_EARLY_SCIF_CONSOLE is not set
++# CONFIG_DWARF_UNWINDER is not set
++
++#
++# Security options
++#
++# CONFIG_KEYS is not set
++# CONFIG_SECURITY is not set
++# CONFIG_SECURITYFS is not set
++# CONFIG_SECURITY_FILE_CAPABILITIES is not set
++# CONFIG_CRYPTO is not set
++# CONFIG_BINARY_PRINTF is not set
++
++#
++# Library routines
++#
++CONFIG_BITREVERSE=y
++CONFIG_GENERIC_FIND_LAST_BIT=y
++# CONFIG_CRC_CCITT is not set
++# CONFIG_CRC16 is not set
++# CONFIG_CRC_T10DIF is not set
++# CONFIG_CRC_ITU_T is not set
++CONFIG_CRC32=y
++# CONFIG_CRC7 is not set
++# CONFIG_LIBCRC32C is not set
++CONFIG_ZLIB_INFLATE=y
++CONFIG_ZLIB_DEFLATE=y
++CONFIG_HAS_IOMEM=y
++CONFIG_HAS_IOPORT=y
++CONFIG_HAS_DMA=y
++CONFIG_HAVE_LMB=y
++CONFIG_NLATTR=y
++CONFIG_GENERIC_ATOMIC64=y
 diff --git a/arch/sh/include/asm/processor.h b/arch/sh/include/asm/processor.h
 index 017e0c1..dd95a62 100644
 --- a/arch/sh/include/asm/processor.h
@@ -1126,10 +2003,10 @@ index f9c7df6..3602b3c 100644
  
 diff --git a/arch/sh/kernel/cpu/sh3/setup-sh7727.c b/arch/sh/kernel/cpu/sh3/setup-sh7727.c
 new file mode 100644
-index 0000000..4c0c1c0
+index 0000000..679d488
 --- /dev/null
 +++ b/arch/sh/kernel/cpu/sh3/setup-sh7727.c
-@@ -0,0 +1,299 @@
+@@ -0,0 +1,305 @@
 +/*
 + * SH7727 Setup
 + *
@@ -1255,8 +2132,8 @@ index 0000000..4c0c1c0
 +
 +static struct sh_timer_config tmu0_platform_data = {
 +	.name = "TMU0",
-+	.channel_offset = 0x02,
-+	.timer_bit = 0,
++	.channel_offset = 0x02,		/* Gap between TSTR and base(.start) */
++	.timer_bit = 0,			/* Enable bit in TSTR */
 +	.clk = "peripheral_clk",
 +	.clockevent_rating = 200,
 +};
@@ -1315,6 +2192,7 @@ index 0000000..4c0c1c0
 +	.num_resources	= ARRAY_SIZE(tmu1_resources),
 +};
 +
++#if 0
 +static struct sh_timer_config tmu2_platform_data = {
 +	.name = "TMU2",
 +	.channel_offset = 0x1a,
@@ -1344,11 +2222,14 @@ index 0000000..4c0c1c0
 +	.resource	= tmu2_resources,
 +	.num_resources	= ARRAY_SIZE(tmu2_resources),
 +};
++#endif
 +
 +static struct platform_device *sh7727_devices[] __initdata = {
 +	&tmu0_device,
 +	&tmu1_device,
++#if 0
 +	&tmu2_device,
++#endif
 +	&rtc_device,
 +	&sci_device,
 +/*	&usb_ohci_device,
@@ -1363,9 +2244,11 @@ index 0000000..4c0c1c0
 +arch_initcall(sh7727_devices_setup);
 +
 +static struct platform_device *sh7727_early_devices[] __initdata = {
-+	&tmu0_device,
-+	&tmu1_device,
++	&tmu0_device,	/* clock event */
++	&tmu1_device,	/* clock source */
++#if 0
 +	&tmu2_device,
++#endif
 +};
 +
 +void __init plat_early_device_setup(void)
@@ -1945,6 +2828,259 @@ index 0000000..ae8e9c1
 +MODULE_AUTHOR("Yibo Cai");
 +MODULE_DESCRIPTION("GPIO Driven Keypad Driver For Cobra Board");
 +MODULE_LICENSE("GPL");
+diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
+index a9bb254..522bebb 100644
+--- a/drivers/input/misc/Kconfig
++++ b/drivers/input/misc/Kconfig
+@@ -317,4 +317,11 @@ config INPUT_PCAP
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called pcap_keys.
+ 
++config INPUT_COBRA7727_BEEPER
++	tristate "Cobra Beeper support"
++	depends on SH_COBRA7727
++	help
++	  To compile this driver as a module, choose M here: the
++	  module will be called cobra_beeper.
++
+ endif
+diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
+index a8b8485..a4bdc7e 100644
+--- a/drivers/input/misc/Makefile
++++ b/drivers/input/misc/Makefile
+@@ -30,4 +30,4 @@ obj-$(CONFIG_INPUT_WINBOND_CIR)		+= winbond-cir.o
+ obj-$(CONFIG_INPUT_WISTRON_BTNS)	+= wistron_btns.o
+ obj-$(CONFIG_INPUT_WM831X_ON)		+= wm831x-on.o
+ obj-$(CONFIG_INPUT_YEALINK)		+= yealink.o
+-
++obj-$(CONFIG_INPUT_COBRA7727_BEEPER)	+= cobra_beeper.o
+diff --git a/drivers/input/misc/cobra_beeper.c b/drivers/input/misc/cobra_beeper.c
+new file mode 100644
+index 0000000..ea03704
+--- /dev/null
++++ b/drivers/input/misc/cobra_beeper.c
+@@ -0,0 +1,208 @@
++/*
++ * Cobra(sh7727) beeper driver
++ * Copyright(C) 2013 Yibo Cai <cyb70289@gmail.com>
++ *
++ * based on ixp4xx-beeper.c
++ * Copyright (C) 2005 Tower Technologies
++ *
++ * based on nslu2-io.c
++ * Copyright (C) 2004 Karen Spearel
++ *
++ * Author: Alessandro Zummo <a.zummo@towertech.it>
++ * Maintainers: http://www.nslu2-linux.org/
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/input.h>
++#include <linux/delay.h>
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/gpio.h>
++#include <linux/workqueue.h>
++#include <asm/io.h>
++#include <cpu/sh7727.h>
++
++#define BEEPER_DEBUG
++
++#define FREQ	(CONFIG_SH_PCLK_FREQ/4)	/* TMU prescale = 4 */
++
++#define TSTR	0xFFFFFE92
++#define TCOR2	0xFFFFFEAC
++#define TCNT2	0xFFFFFEB0
++#define TCR2	0xFFFFFEB4
++
++#define IRQ_BEEPER_TMU2	18
++
++static DEFINE_SPINLOCK(beep_lock);
++
++static void beeper_control(unsigned int count)
++{
++	unsigned long flags;
++	unsigned char tstr;
++
++	/* TODO: Disable irq here is not enough to protect TSTR on SMP,
++	 * the lock in drivers/clocksource/sh_tmu.c should be used.
++	 */
++	spin_lock_irqsave(&beep_lock, flags);
++
++	if (count){
++		gpio_set_value(GPIO_PTJ1, 1);
++		iowrite32(count, TCOR2);
++		iowrite32(count, TCNT2);
++		iowrite16(0x0020, TCR2);	/* prescale = 4 */
++		tstr = ioread8(TSTR) | 0x04;	/* Enable TMU2 */
++	} else {
++		iowrite16(0x0000, TCR2);
++		tstr = ioread8(TSTR) & 0xFB;	/* Disable TMU2 */
++	}
++	mb();
++	iowrite8(tstr, TSTR);
++
++	spin_unlock_irqrestore(&beep_lock, flags);
++}
++
++static int beeper_event(struct input_dev *dev, unsigned int type,
++			unsigned int code, int value)
++{
++	unsigned int count = 0;
++
++	if (type != EV_SND)
++		return -1;
++
++	switch (code) {
++		case SND_BELL:
++			if (value)
++				value = 1000;
++		case SND_TONE:
++			break;
++		default:
++			return -1;
++	}
++
++	if (value > 20 && value < 32767)
++		count = (FREQ / (value * 2)) - 1;
++
++	beeper_control(count);
++
++	return 0;
++}
++
++static irqreturn_t beeper_interrupt(int irq, void *dev_id)
++{
++	/* clear interrupt */
++	iowrite16(0x0020, TCR2);
++
++	/* flip the beeper output */
++	gpio_set_value(GPIO_PTJ1, 1 - gpio_get_value(GPIO_PTJ1));
++
++	return IRQ_HANDLED;
++}
++
++static int __devinit beeper_probe(struct platform_device *dev)
++{
++	struct input_dev *input_dev;
++	int err;
++
++	input_dev = input_allocate_device();
++	if (!input_dev)
++		return -ENOMEM;
++
++	input_set_drvdata(input_dev, (void*)dev->id);
++
++	input_dev->name = "cobra-beeper",
++	input_dev->phys = "cobra/gpio";
++	input_dev->id.bustype = BUS_HOST;
++	input_dev->id.vendor  = 0x0001;
++	input_dev->id.product = 0x0001;
++	input_dev->id.version = 0x0001;
++	input_dev->dev.parent = &dev->dev;
++
++	input_dev->evbit[0] = BIT_MASK(EV_SND);
++	input_dev->sndbit[0] = BIT_MASK(SND_BELL) | BIT_MASK(SND_TONE);
++	input_dev->event = beeper_event;
++
++	err = request_irq(IRQ_BEEPER_TMU2, &beeper_interrupt,
++			  IRQF_DISABLED | IRQF_TIMER, "cobra-beeper", (void*)dev->id);
++	if (err)
++		goto err_free_device;
++
++	err = input_register_device(input_dev);
++	if (err)
++		goto err_free_irq;
++
++	platform_set_drvdata(dev, input_dev);
++
++	gpio_request(GPIO_PTJ1, "Beeper_IO");
++	gpio_direction_output(GPIO_PTJ1, 1);
++
++#ifdef BEEPER_DEBUG
++	input_event(input_dev, EV_SND, SND_TONE, 2000);
++#endif
++	return 0;
++
++err_free_irq:
++	free_irq(IRQ_BEEPER_TMU2, (void*)dev->id);
++err_free_device:
++	input_free_device(input_dev);
++
++	return err;
++}
++
++static int __devexit beeper_remove(struct platform_device *dev)
++{
++	struct input_dev *input_dev = platform_get_drvdata(dev);
++
++	input_unregister_device(input_dev);
++	platform_set_drvdata(dev, NULL);
++
++	/* turn the speaker off */
++	disable_irq(IRQ_BEEPER_TMU2);
++	free_irq(IRQ_BEEPER_TMU2, (void*)dev->id);
++
++	beeper_control(0);
++
++	gpio_set_value(GPIO_PTJ1, 1);
++	gpio_free(GPIO_PTJ1);
++
++	return 0;
++}
++
++static void beeper_shutdown(struct platform_device *dev)
++{
++	/* turn off the speaker */
++	disable_irq(IRQ_BEEPER_TMU2);
++
++	gpio_set_value(GPIO_PTJ1, 1);
++}
++
++static struct platform_driver beeper_platform_driver = {
++	.driver		= {
++		.name	= "cobra-beeper",
++		.owner	= THIS_MODULE,
++	},
++	.probe		= beeper_probe,
++	.remove		= __devexit_p(beeper_remove),
++	.shutdown	= beeper_shutdown,
++};
++
++static int __init drv_init(void)
++{
++	return platform_driver_register(&beeper_platform_driver);
++}
++
++static void __exit drv_exit(void)
++{
++	platform_driver_unregister(&beeper_platform_driver);
++}
++
++module_init(drv_init);
++module_exit(drv_exit);
++
++MODULE_AUTHOR("Yibo Cai<cyb70289@gmail.com>");
++MODULE_DESCRIPTION("Cobra beeper driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/input/misc/ixp4xx-beeper.c b/drivers/input/misc/ixp4xx-beeper.c
+index 9946d73..1f1adac 100644
+--- a/drivers/input/misc/ixp4xx-beeper.c
++++ b/drivers/input/misc/ixp4xx-beeper.c
+@@ -35,7 +35,7 @@ static void ixp4xx_spkr_control(unsigned int pin, unsigned int count)
+ 
+ 	spin_lock_irqsave(&beep_lock, flags);
+ 
+-	 if (count) {
++	if (count) {
+ 		gpio_line_config(pin, IXP4XX_GPIO_OUT);
+ 		gpio_line_set(pin, IXP4XX_GPIO_LOW);
+ 
 diff --git a/drivers/serial/sh-sci.h b/drivers/serial/sh-sci.h
 index 3e2fcf9..15b93e9 100644
 --- a/drivers/serial/sh-sci.h
@@ -3505,10 +4641,10 @@ index 0000000..00ae7c5
 +
 diff --git a/drivers/video/uc1161fb.c b/drivers/video/uc1161fb.c
 new file mode 100644
-index 0000000..7bbb3e3
+index 0000000..edb0f0a
 --- /dev/null
 +++ b/drivers/video/uc1161fb.c
-@@ -0,0 +1,2047 @@
+@@ -0,0 +1,2048 @@
 +/*
 + *  Cobra UC1161 LCD frame buffer driver.
 + *  For Cobar SH7727 board.
@@ -3626,8 +4762,8 @@ index 0000000..7bbb3e3
 +	return 0;
 +}
 +
-+extern unsigned char cobra_logo[];
-+static void show_logo(void)
++extern unsigned char cobra_logo[]; 
++static void __devinit show_logo(void)
 +{
 +	int counter;
 +	long rowpair, col, colbyte;
@@ -3685,7 +4821,7 @@ index 0000000..7bbb3e3
 +		lcd_write_control(ini_cmds[i]);
 +}
 +
-+static void lcd_init(void)
++static void __devinit lcd_init(void)
 +{
 +	/* Backlight on */
 +	gpio_request(GPIO_PTJ5, "lcd-bl");
@@ -4006,7 +5142,7 @@ index 0000000..7bbb3e3
 +	/* Allocate video memory */
 +	fbmem_size = LCD_XRES * LCD_YRES / (8 / LCD_BPP);
 +	fbmem = kzalloc(fbmem_size, GFP_KERNEL);
-+	if (unlikely(fbmem == NULL))
++	if (fbmem == NULL)
 +		return -ENOMEM;
 +
 +	/* Allocate frame buffer */
@@ -5556,6 +6692,7 @@ index 0000000..7bbb3e3
 +0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
 +0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
 +};
++
 diff --git a/include/linux/linux_logo.h b/include/linux/linux_logo.h
 index ca5bd91..4adb595 100644
 --- a/include/linux/linux_logo.h
